@@ -5,7 +5,7 @@ public class Melody {
     private final String[] allNotes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     private String[] keyNotes;
     private int length;
-    private double pausePercentage;
+    private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage, viiPercentage;
 
     public Melody(int newLength){
         setLength(newLength);
@@ -51,7 +51,7 @@ public class Melody {
         this.keyNotes = newKeyNotes;
     }
 
-    public int getLength() {
+    public int getLength(){
         return this.length;
     }
 
@@ -63,7 +63,7 @@ public class Melody {
         }
     }
 
-    private double getPausePercentage() {
+    private double getPausePercentage(){
         return this.pausePercentage;
     }
 
@@ -75,6 +75,90 @@ public class Melody {
         }
     }
 
+    private double getiPercentage(){
+        return this.iPercentage;
+    }
+
+    private void setiPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.iPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getiiPercentage(){
+        return this.iiPercentage;
+    }
+
+    private void setiiPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.iiPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getiiiPercentage(){
+        return this.iiiPercentage;
+    }
+
+    private void setiiiPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.iiiPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getivPercentage(){
+        return this.ivPercentage;
+    }
+
+    private void setivPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.ivPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getvPercentage(){
+        return this.vPercentage;
+    }
+
+    private void setvPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.vPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getviPercentage(){
+        return this.viPercentage;
+    }
+
+    private void setviPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.viPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
+    private double getviiPercentage(){
+        return this.viiPercentage;
+    }
+
+    private void setviiPercentage(double newPercentage){
+        if(newPercentage >= 0 && newPercentage <= 1){
+            this.viiPercentage = newPercentage;
+        } else {
+            System.out.println("The given iPercentage is out of bounds!");
+        }
+    }
+
     // Actual Methods
 
     public void createRhythm(){
@@ -82,7 +166,7 @@ public class Melody {
         for(int i = 0; i < getLength(); i++){ // TODO: Optional - Add higher chance for first beat to be a note
             if(Math.random() < getPausePercentage()){
                 getRhythm()[i] = false;
-                setPausePercentage(getPausePercentage() * 0.9); // pausePercentage decreases the longer the pause has been
+                setPausePercentage(getPausePercentage() * 0.9); // "notePercentage" increases (pausePercentage decreases) the longer the pause has been
             } else {
                 getRhythm()[i] = true;
                 setPausePercentage(0.75);
@@ -125,6 +209,15 @@ public class Melody {
             }
         } else {
             System.out.println("The given tonica is not part of the Western note system!");
+        }
+    }
+
+    public void createMelody(){
+        setMelody(new String[getLength()]);
+        for(int i = 0; i < getMelody().length; i++){
+            if(getRhythm()[i]){
+
+            }
         }
     }
 }
