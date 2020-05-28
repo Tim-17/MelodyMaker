@@ -8,9 +8,16 @@ public class Melody {
     private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage, viiPercentage;
 
     public Melody(int newLength){
+        setKeyNotes(new String[7]);
         setLength(newLength);
         setPausePercentage(0.75);
-        setKeyNotes(new String[7]);
+        // This percentage distribution lays emphasis on I and V -> can always be manipulated for different results
+        setiPercentage(0.25);
+        setiiPercentage(getiPercentage() + 0.1);
+        setiiiPercentage(getiiPercentage() + 0.1);
+        setivPercentage(getiiiPercentage() + 0.1);
+        setvPercentage(getivPercentage() + 0.25);
+        setviPercentage(getvPercentage() + 0.1);
     }
 
     // Getters & Setters
@@ -147,18 +154,6 @@ public class Melody {
         }
     }
 
-    private double getviiPercentage(){
-        return this.viiPercentage;
-    }
-
-    private void setviiPercentage(double newPercentage){
-        if(newPercentage >= 0 && newPercentage <= 1){
-            this.viiPercentage = newPercentage;
-        } else {
-            System.out.println("The given iPercentage is out of bounds!");
-        }
-    }
-
     // Actual Methods
 
     public void createRhythm(){
@@ -214,9 +209,28 @@ public class Melody {
 
     public void createMelody(){
         setMelody(new String[getLength()]);
+        double randDouble = 0;
         for(int i = 0; i < getMelody().length; i++){
             if(getRhythm()[i]){
-
+                randDouble = Math.random();
+                if(randDouble < getiPercentage()){ // I
+                    getMelody()[i] = getKeyNotes()[0];
+                } else if(getiPercentage() < randDouble && randDouble < getiiPercentage()){ // II
+                    getMelody()[i] = getKeyNotes()[1];
+                } else if(getiiPercentage() < randDouble && randDouble < getiiiPercentage()){ // III
+                    getMelody()[i] = getKeyNotes()[2];
+                } else if(getiiiPercentage() < randDouble && randDouble < getivPercentage()){ // IV
+                    getMelody()[i] = getKeyNotes()[3];
+                }
+                else if(getivPercentage() < randDouble && randDouble < getvPercentage()){ // V
+                    getMelody()[i] = getKeyNotes()[4];
+                }
+                else if(getvPercentage() < randDouble && randDouble < getviPercentage()){ // VI
+                    getMelody()[i] = getKeyNotes()[5];
+                }
+                else { // VII
+                    getMelody()[i] = getKeyNotes()[6];
+                }
             }
         }
     }
