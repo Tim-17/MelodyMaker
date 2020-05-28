@@ -169,15 +169,17 @@ public class Melody {
         }
     }
 
-    public void createKeyNotes(String tonica, boolean major){
-        getKeyNotes()[0] = tonica;
+    public void createKeyNotes(String tonic, boolean major){
+        getKeyNotes()[0] = tonic;
         int currentIndex = -1;
+        // Find index of tonic
         for(int i = 0; i < getAllNotes().length; i++) {
-            if(getAllNotes()[i].equals(tonica)){
+            if(getAllNotes()[i].equals(tonic)){
                 currentIndex = i;
                 break;
             }
         }
+        // Create rest of notes based on index of tonic
         if(currentIndex != -1){
             if(major){
                 int i = 1;
@@ -203,7 +205,7 @@ public class Melody {
                 }
             }
         } else {
-            System.out.println("The given tonica is not part of the Western note system!");
+            System.out.println("The given tonic is not part of the Western note system!");
         }
     }
 
