@@ -77,7 +77,7 @@ public class Melody {
 
     // Actual Methods
 
-    public void setRandomRhythm(){
+    public void createRhythm(){
         setRhythm(new boolean[getLength()]);
         for(int i = 0; i < getLength(); i++){ // TODO: Optional - Add higher chance for first beat to be a note
             if(Math.random() < getPausePercentage()){
@@ -101,7 +101,7 @@ public class Melody {
         }
         if(currentIndex != -1){
             if(major){
-                int i = 0;
+                int i = 1;
                 for(int next : new int[]{2,2,1,2,2,2}){
                     if(currentIndex + next < getAllNotes().length){
                         currentIndex = currentIndex + next;
@@ -112,7 +112,7 @@ public class Melody {
                     i++;
                 }
             } else {
-                int i = 0;
+                int i = 1;
                 for(int next : new int[]{2,1,2,2,1,2}){
                     if(currentIndex + next < getAllNotes().length){
                         currentIndex = currentIndex + next;
