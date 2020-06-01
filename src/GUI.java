@@ -1,20 +1,35 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class GUI{
-    
+
+    private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
     private JFrame frame, rhythmInput, chordsInput;
     private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
-    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallesSubdivCB;
+    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
     
     public GUI(){
         // Initialising
+
+        try{
+            whole = new ImageIcon(ImageIO.read(new File("res/edits/whole_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+            half = new ImageIcon(ImageIO.read(new File("res/edits/half_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+            quarter = new ImageIcon(ImageIO.read(new File("res/edits/quarter_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+            eighth = new ImageIcon(ImageIO.read(new File("res/edits/eighth_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+            sixteenth = new ImageIcon(ImageIO.read(new File("res/edits/sixteenth_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+            thirtysecond = new ImageIcon(ImageIO.read(new File("res/edits/thirtysecond_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
+        }
+        catch(Exception e){
+            System.out.println("Oooops, something went wrong!");
+        }
 
         frame = new JFrame("MelodyMaker");
         rhythmInput = new JFrame("Enter your rhythm");
@@ -39,10 +54,14 @@ public class GUI{
         melodyDisplay.setLayout(new BorderLayout());
         sheetMusic = new JPanel();
         keyCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
+        keyCB.setMaximumRowCount(12);
         majorCB = new JComboBox(new String[]{"Major", "Minor"}); // TODO: Could add other modes
         timeSigCB = new JComboBox(new String[]{"4/4", "3/4", "6/4", "2/4", "5/4", "7/4", "7/8", "15/16"});
+        timeSigCB.setSelectedIndex(0);
         numberMeasuresCB = new JComboBox(new String[]{"1", "2", "3", "4"});
-        smallesSubdivCB = new JComboBox(new String[]{"Quarter notes", "Eighth notes", "Sixteenth Notes", "Thirty second notes"}); // TODO: replace strings with images
+        numberMeasuresCB.setSelectedIndex(0);
+        smallestSubdivCB = new JComboBox(new ImageIcon[]{whole, half, quarter, eighth, sixteenth, thirtysecond});
+        smallestSubdivCB.setSelectedIndex(4);
         enterRhythmB = new JButton("Enter rhythm");
         deleteRhythm = new JButton("Delete rhythm");
         deleteRhythm.setVisible(false);
@@ -108,7 +127,7 @@ public class GUI{
         keyParameters.add(smallestSubdivL);
         keyParameters.add(timeSigCB);
         keyParameters.add(numberMeasuresCB);
-        keyParameters.add(smallesSubdivCB);
+        keyParameters.add(smallestSubdivCB);
 
         melodyDisplay.add(melodyL, BorderLayout.NORTH);
         melodyDisplay.add(sheetMusic, BorderLayout.CENTER);
