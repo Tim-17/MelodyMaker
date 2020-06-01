@@ -1,17 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GUI{
     
     private Melody melody;
-    private JFrame frame;
+    private JFrame frame, rhythmInput, chordsInput;
     private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallesSubdivCB;
-    private JButton enterRhythmB, enterChordsB, createMelodyB, playMelodyB;
+    private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
+    private boolean rhythmEntered, chordsEntered;
     
     public GUI(){
+        // Initialising
+
         frame = new JFrame("MelodyMaker");
+        rhythmInput = new JFrame("Enter your rhythm");
+        chordsInput = new JFrame("Enter your chords");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
         userInput = new JPanel();
@@ -21,7 +28,9 @@ public class GUI{
         keyChoice = new JPanel();
         keyChoice.setLayout(new GridLayout(1,2));
         rhythmDisplay = new JPanel();
+        rhythmDisplay.setLayout(new BorderLayout());
         chordsDisplay = new JPanel();
+        chordsDisplay.setLayout(new BorderLayout());
         fillPanel = new JPanel();
         fillPanel.setLayout(new GridLayout(2,1));
         keyParameters = new JPanel();
@@ -35,7 +44,11 @@ public class GUI{
         numberMeasuresCB = new JComboBox(new String[]{"1", "2", "3", "4"});
         smallesSubdivCB = new JComboBox(new String[]{"Quarter notes", "Eighth notes", "Sixteenth Notes", "Thirty second notes"}); // TODO: replace strings with images
         enterRhythmB = new JButton("Enter rhythm");
+        deleteRhythm = new JButton("Delete rhythm");
+        deleteRhythm.setVisible(false);
         enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord creation function
+        deleteChords = new JButton("Delete chords");
+        deleteChords.setVisible(false);
         createMelodyB = new JButton("Create melody");
         playMelodyB = new JButton("Play melody");
         keyL = new JLabel("Key: ");
@@ -43,10 +56,14 @@ public class GUI{
         timeSigL = new JLabel("Time Signature: ");
         numberMeasuresL = new JLabel("Number of measures: ");
         smallestSubdivL = new JLabel("Smallest Subdivision: ");
+        setRhythmEntered(false);
+        setChordsEntered(false);
+
+        // GUI structuring
 
         frame.add(frameBorderPanel);
         frame.setLocationRelativeTo(null);
-        frame.setSize(500,350);
+        frame.setSize(1000,700);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -68,6 +85,21 @@ public class GUI{
         keyChoice.add(keyCB);
         keyChoice.add(majorCB);
 
+        rhythmInput.setSize(500, 250);
+        rhythmInput.setResizable(false);
+        rhythmInput.setLocationRelativeTo(frame);
+        rhythmInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        rhythmInput.setVisible(false);
+
+        chordsInput.setSize(500, 250);
+        chordsInput.setResizable(false);
+        chordsInput.setLocationRelativeTo(frame);
+        chordsInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        chordsInput.setVisible(false);
+
+        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH);
+        chordsDisplay.add(deleteChords, BorderLayout.SOUTH);
+
         fillPanel.add(keyParameters);
         fillPanel.add(new JLabel());
 
@@ -81,5 +113,65 @@ public class GUI{
         melodyDisplay.add(melodyL, BorderLayout.NORTH);
         melodyDisplay.add(sheetMusic, BorderLayout.CENTER);
         melodyDisplay.add(playMelodyB, BorderLayout.SOUTH);
+
+        // ActionListeners
+
+        enterRhythmB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        deleteRhythm.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        enterChordsB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        deleteChords.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        createMelodyB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        playMelodyB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+    }
+
+    public boolean getRhythmEntered() {
+        return this.rhythmEntered;
+    }
+
+    public void setRhythmEntered(boolean newRhythmEntered) {
+        this.rhythmEntered = newRhythmEntered;
+    }
+
+    public boolean getChordsEntered() {
+        return this.chordsEntered;
+    }
+
+    public void setChordsEntered(boolean newMelodyEntered) {
+        this.chordsEntered = newMelodyEntered;
     }
 }
