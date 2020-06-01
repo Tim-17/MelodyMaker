@@ -9,7 +9,7 @@ public class Melody {
 
     public Melody(String timeSig, int numberMeasures, int smallestSubdiv){
         setKeyNotes(new String[7]);
-        setLength(numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv/Integer.parseInt(String.valueOf(timeSig.charAt(2))));
+        setLength(numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2))));
         setPausePercentage(0.75);
         // This percentage distribution lays emphasis on I and V -> can always be manipulated for different results
         setiPercentage(0.25);

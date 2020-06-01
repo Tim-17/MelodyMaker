@@ -26,8 +26,7 @@ public class GUI{
             eighth = new ImageIcon(ImageIO.read(new File("res/edits/eighth_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
             sixteenth = new ImageIcon(ImageIO.read(new File("res/edits/sixteenth_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
             thirtysecond = new ImageIcon(ImageIO.read(new File("res/edits/thirtysecond_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
-        }
-        catch(Exception e){
+        } catch(Exception e){
             System.out.println("Oooops, something went wrong!");
         }
 
@@ -82,6 +81,11 @@ public class GUI{
 
         frame.add(frameBorderPanel);
         frame.setLocationRelativeTo(null);
+        try{
+            frame.setIconImage(ImageIO.read(new File("res/edits/quarter_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH)); // Image -> Quarter
+        } catch (Exception e){
+            System.out.println("Oooops, something went wrong!");
+        }
         frame.setSize(1000,700);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -166,7 +170,26 @@ public class GUI{
         createMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                switch(smallestSubdivCB.getSelectedIndex()){
+                    case 0:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1));
+                        break;
+                    case 1:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 2));
+                        break;
+                    case 2:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 4));
+                        break;
+                    case 3:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 8));
+                        break;
+                    case 4:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16));
+                        break;
+                    case 5:
+                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32));
+                        break;
+                }
             }
         });
 
@@ -176,6 +199,46 @@ public class GUI{
 
             }
         });
+
+        timeSigCB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                smallestSubdivCB.removeAllItems();
+                switch(timeSigCB.getSelectedIndex()){ // TODO: inserting the new contents doesn't work yet
+                    case 0:
+                        smallestSubdivCB = new JComboBox(new ImageIcon[]{whole, half, quarter, eighth, sixteenth, thirtysecond});
+                        break;
+                    case 2:
+                    case 3:
+                        smallestSubdivCB = new JComboBox(new ImageIcon[]{half, quarter, eighth, sixteenth, thirtysecond});
+                        break;
+                    case 1:
+                    case 4:
+                    case 5:
+                        smallestSubdivCB = new JComboBox(new ImageIcon[]{quarter, eighth, sixteenth, thirtysecond});
+                        break;
+                    case 6:
+                        smallestSubdivCB = new JComboBox(new ImageIcon[]{eighth, sixteenth, thirtysecond});
+                        break;
+                    case 7:
+                        smallestSubdivCB = new JComboBox(new ImageIcon[]{sixteenth, thirtysecond});
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + timeSigCB.getSelectedIndex());
+                }
+                smallestSubdivCB.updateUI();
+            }
+        });
+    }
+
+    // Getters & Setters
+
+    public Melody getMelody() {
+        return this.melody;
+    }
+
+    public void setMelody(Melody melody) {
+        this.melody = melody;
     }
 
     public boolean getRhythmEntered() {
