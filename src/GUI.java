@@ -148,68 +148,61 @@ public class GUI{
 
         enterRhythmB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
 
             }
         });
 
         deleteRhythm.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
 
             }
         });
 
         enterChordsB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
 
             }
         });
 
         deleteChords.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
 
             }
         });
 
         createMelodyB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
-                switch(smallestSubdivCB.getSelectedIndex()){ // TODO: base smallestSubdiv value for new Melody on selected Item not Index as the index of a certain item varies with different timeSigs
-                    case 0:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1));
-                        break;
-                    case 1:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 2));
-                        break;
-                    case 2:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 4));
-                        break;
-                    case 3:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 8));
-                        break;
-                    case 4:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16));
-                        break;
-                    case 5:
-                        setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32));
-                        break;
+            public void actionPerformed(ActionEvent e){
+                if(smallestSubdivCB.getSelectedItem() == whole){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1));
+                } else if(smallestSubdivCB.getSelectedItem() == half){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 2));
+                } else if(smallestSubdivCB.getSelectedItem() == quarter){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 4));
+                } else if(smallestSubdivCB.getSelectedItem() == eighth){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 8));
+                } else if(smallestSubdivCB.getSelectedItem() == sixteenth){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16));
+                } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
+                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32));
                 }
             }
         });
 
         playMelodyB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
 
             }
         });
 
         timeSigCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
                 // Delete all elements in smallestSubdivCB
                 int size = subdivModel.getSize();
                 for(int i = 0; i < size; i++){
