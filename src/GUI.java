@@ -12,6 +12,7 @@ public class GUI{
     private JFrame frame, rhythmInput, chordsInput;
     private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
+    private MutableComboBoxModel subdivModel;
     private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
@@ -59,7 +60,14 @@ public class GUI{
         timeSigCB.setSelectedIndex(0);
         numberMeasuresCB = new JComboBox(new String[]{"1", "2", "3", "4"});
         numberMeasuresCB.setSelectedIndex(0);
-        smallestSubdivCB = new JComboBox(new ImageIcon[]{whole, half, quarter, eighth, sixteenth, thirtysecond});
+        subdivModel = new DefaultComboBoxModel();
+        subdivModel.addElement(whole);
+        subdivModel.addElement(half);
+        subdivModel.addElement(quarter);
+        subdivModel.addElement(eighth);
+        subdivModel.addElement(sixteenth);
+        subdivModel.addElement(thirtysecond);
+        smallestSubdivCB = new JComboBox(subdivModel);
         smallestSubdivCB.setSelectedIndex(4);
         enterRhythmB = new JButton("Enter rhythm");
         deleteRhythm = new JButton("Delete rhythm");
@@ -80,7 +88,6 @@ public class GUI{
         // GUI structuring
 
         frame.add(frameBorderPanel);
-        frame.setLocationRelativeTo(null);
         try{
             frame.setIconImage(ImageIO.read(new File("res/edits/quarter_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH)); // Image -> Quarter
         } catch (Exception e){
@@ -170,7 +177,7 @@ public class GUI{
         createMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                switch(smallestSubdivCB.getSelectedIndex()){
+                switch(smallestSubdivCB.getSelectedIndex()){ // TODO: base smallestSubdiv value for new Melody on selected Item not Index as the index of a certain item varies with different timeSigs
                     case 0:
                         setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1));
                         break;
@@ -203,30 +210,59 @@ public class GUI{
         timeSigCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                smallestSubdivCB.removeAllItems();
-                switch(timeSigCB.getSelectedIndex()){ // TODO: inserting the new contents doesn't work yet
+                // Delete all elements in smallestSubdivCB
+                int size = subdivModel.getSize();
+                for(int i = 0; i < size; i++){
+                    subdivModel.removeElementAt(0);
+                }
+                // Add all fitting elements to smallestSubdivCB
+                switch(timeSigCB.getSelectedIndex()){
                     case 0:
-                        smallestSubdivCB = new JComboBox(new ImageIcon[]{whole, half, quarter, eighth, sixteenth, thirtysecond});
+                        subdivModel.addElement(whole);
+                        subdivModel.addElement(half);
+                        subdivModel.addElement(quarter);
+                        subdivModel.addElement(eighth);
+                        subdivModel.addElement(sixteenth);
+                        subdivModel.addElement(thirtysecond);
+                        smallestSubdivCB.setModel(subdivModel);
+                        smallestSubdivCB.setSelectedIndex(4);
                         break;
                     case 2:
                     case 3:
-                        smallestSubdivCB = new JComboBox(new ImageIcon[]{half, quarter, eighth, sixteenth, thirtysecond});
+                        subdivModel.addElement(half);
+                        subdivModel.addElement(quarter);
+                        subdivModel.addElement(eighth);
+                        subdivModel.addElement(sixteenth);
+                        subdivModel.addElement(thirtysecond);
+                        smallestSubdivCB.setModel(subdivModel);
+                        smallestSubdivCB.setSelectedIndex(3);
                         break;
                     case 1:
                     case 4:
                     case 5:
-                        smallestSubdivCB = new JComboBox(new ImageIcon[]{quarter, eighth, sixteenth, thirtysecond});
+                        subdivModel.addElement(quarter);
+                        subdivModel.addElement(eighth);
+                        subdivModel.addElement(sixteenth);
+                        subdivModel.addElement(thirtysecond);
+                        smallestSubdivCB.setModel(subdivModel);
+                        smallestSubdivCB.setSelectedIndex(2);
                         break;
                     case 6:
-                        smallestSubdivCB = new JComboBox(new ImageIcon[]{eighth, sixteenth, thirtysecond});
+                        subdivModel.addElement(eighth);
+                        subdivModel.addElement(sixteenth);
+                        subdivModel.addElement(thirtysecond);
+                        smallestSubdivCB.setModel(subdivModel);
+                        smallestSubdivCB.setSelectedIndex(1);
                         break;
                     case 7:
-                        smallestSubdivCB = new JComboBox(new ImageIcon[]{sixteenth, thirtysecond});
+                        subdivModel.addElement(sixteenth);
+                        subdivModel.addElement(thirtysecond);
+                        smallestSubdivCB.setModel(subdivModel);
+                        smallestSubdivCB.setSelectedIndex(0);
                         break;
                     default:
-                        throw new IllegalStateException("Unexpected value: " + timeSigCB.getSelectedIndex());
+                        break;
                 }
-                smallestSubdivCB.updateUI();
             }
         });
     }
