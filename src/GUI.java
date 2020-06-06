@@ -5,17 +5,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import static java.awt.Toolkit.getDefaultToolkit;
+
 public class GUI{
 
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
     private JFrame frame, rhythmInput, chordsInput;
-    private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private JPanel frameBorderPanel, rhythmInputPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private MutableComboBoxModel subdivModel;
     private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
+    private int length;
+    private final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
+    private final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
+    private final int OTHER_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.5);
+    private final int OTHER_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.5);
     
     public GUI(){
         // Initialising
@@ -36,6 +43,8 @@ public class GUI{
         chordsInput = new JFrame("Enter your chords");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
+        rhythmInputPanel = new MyPanel(getLength());
+        chordsInputPanel = new JPanel();
         userInput = new JPanel();
         userInput.setLayout(new GridLayout(1,2));
         extraInput = new JPanel();
@@ -54,8 +63,10 @@ public class GUI{
         melodyDisplay.setLayout(new BorderLayout());
         sheetMusic = new JPanel();
         keyCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
+        keyCB.setSelectedIndex(0);
         keyCB.setMaximumRowCount(12);
         majorCB = new JComboBox(new String[]{"Major", "Minor"}); // TODO: Could add other modes
+        majorCB.setSelectedIndex(0);
         timeSigCB = new JComboBox(new String[]{"4/4", "3/4", "6/4", "2/4", "5/4", "7/4", "7/8", "15/16"});
         timeSigCB.setSelectedIndex(0);
         numberMeasuresCB = new JComboBox(new String[]{"1", "2", "3", "4"});
@@ -84,6 +95,7 @@ public class GUI{
         smallestSubdivL = new JLabel("Smallest Subdivision: ");
         setRhythmEntered(false);
         setChordsEntered(false);
+        setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
 
         // GUI structuring
 
@@ -93,7 +105,7 @@ public class GUI{
         } catch (Exception e){
             System.out.println("Oooops, something went wrong!");
         }
-        frame.setSize(1000,700);
+        frame.setSize(getMAIN_FRAME_WIDTH(), getMAIN_FRAME_HEIGHT());
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -115,20 +127,22 @@ public class GUI{
         keyChoice.add(keyCB);
         keyChoice.add(majorCB);
 
-        rhythmInput.setSize(500, 250);
+        rhythmInput.setSize(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT());
         rhythmInput.setResizable(false);
         rhythmInput.setLocationRelativeTo(frame);
         rhythmInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         rhythmInput.setVisible(false);
+        rhythmInput.add(rhythmInputPanel);
 
-        chordsInput.setSize(500, 250);
+        chordsInput.setSize(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT());
         chordsInput.setResizable(false);
         chordsInput.setLocationRelativeTo(frame);
         chordsInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         chordsInput.setVisible(false);
+        chordsInput.add(chordsInputPanel);
 
-        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH);
-        chordsDisplay.add(deleteChords, BorderLayout.SOUTH);
+        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // add FlowLayout.RIGHT
+        chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // add FlowLayout.RIGHT
 
         fillPanel.add(keyParameters);
         fillPanel.add(new JLabel());
@@ -149,7 +163,7 @@ public class GUI{
         enterRhythmB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                rhythmInput.setVisible(true);
             }
         });
 
@@ -177,19 +191,7 @@ public class GUI{
         createMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                if(smallestSubdivCB.getSelectedItem() == whole){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1));
-                } else if(smallestSubdivCB.getSelectedItem() == half){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 2));
-                } else if(smallestSubdivCB.getSelectedItem() == quarter){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 4));
-                } else if(smallestSubdivCB.getSelectedItem() == eighth){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 8));
-                } else if(smallestSubdivCB.getSelectedItem() == sixteenth){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16));
-                } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
-                    setMelody(new Melody((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32));
-                }
+                setMelody(new Melody(getLength()));
             }
         });
 
@@ -256,33 +258,90 @@ public class GUI{
                     default:
                         break;
                 }
+                updateLength();
+            }
+        });
+
+        numberMeasuresCB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                updateLength();
+            }
+        });
+
+        smallestSubdivCB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                updateLength();
             }
         });
     }
 
     // Getters & Setters
 
-    public Melody getMelody() {
+    private Melody getMelody() {
         return this.melody;
     }
 
-    public void setMelody(Melody melody) {
+    private void setMelody(Melody melody) {
         this.melody = melody;
     }
 
-    public boolean getRhythmEntered() {
+    private boolean getRhythmEntered() {
         return this.rhythmEntered;
     }
 
-    public void setRhythmEntered(boolean newRhythmEntered) {
+    private void setRhythmEntered(boolean newRhythmEntered) {
         this.rhythmEntered = newRhythmEntered;
     }
 
-    public boolean getChordsEntered() {
+    private boolean getChordsEntered() {
         return this.chordsEntered;
     }
 
-    public void setChordsEntered(boolean newMelodyEntered) {
+    private void setChordsEntered(boolean newMelodyEntered) {
         this.chordsEntered = newMelodyEntered;
+    }
+
+    private int getLength() {
+        return this.length;
+    }
+
+    private void setLength(String timeSig, int numberMeasures, int smallestSubdiv) {
+        this.length = numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2)));
+    }
+
+    // Other methods
+
+    private void updateLength(){
+        if(smallestSubdivCB.getSelectedItem() == whole){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1);
+        } else if(smallestSubdivCB.getSelectedItem() == half){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 2);
+        } else if(smallestSubdivCB.getSelectedItem() == quarter){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 4);
+        } else if(smallestSubdivCB.getSelectedItem() == eighth){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 8);
+        } else if(smallestSubdivCB.getSelectedItem() == sixteenth){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
+        } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
+            setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
+        }
+    }
+
+    public int getMAIN_FRAME_WIDTH() {
+        return this.MAIN_FRAME_WIDTH;
+    }
+
+    public int getMAIN_FRAME_HEIGHT() {
+        return this.MAIN_FRAME_HEIGHT;
+    }
+
+    public int getOTHER_FRAME_WIDTH() {
+        return this.OTHER_FRAME_WIDTH;
+    }
+
+    public int getOTHER_FRAME_HEIGHT() {
+        return this.OTHER_FRAME_HEIGHT;
     }
 }
