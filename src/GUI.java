@@ -12,17 +12,18 @@ public class GUI{
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
     private JFrame frame, rhythmInput, chordsInput;
-    private JPanel frameBorderPanel, rhythmInputPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private MyPanel rhythmInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private MutableComboBoxModel subdivModel;
     private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
     private int length;
-    private final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
-    private final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
-    private final int OTHER_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.5);
-    private final int OTHER_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.5);
+    private static final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
+    private static final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
+    private static final int OTHER_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.5);
+    private static final int OTHER_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.5);
     
     public GUI(){
         // Initialising
@@ -43,7 +44,7 @@ public class GUI{
         chordsInput = new JFrame("Enter your chords");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
-        rhythmInputPanel = new MyPanel(getLength());
+        rhythmInputPanel = new MyPanel();
         chordsInputPanel = new JPanel();
         userInput = new JPanel();
         userInput.setLayout(new GridLayout(1,2));
@@ -279,6 +280,22 @@ public class GUI{
 
     // Getters & Setters
 
+    public static int getMAIN_FRAME_WIDTH() {
+        return MAIN_FRAME_WIDTH;
+    }
+
+    public static int getMAIN_FRAME_HEIGHT() {
+        return MAIN_FRAME_HEIGHT;
+    }
+
+    public static int getOTHER_FRAME_WIDTH() {
+        return OTHER_FRAME_WIDTH;
+    }
+
+    public static int getOTHER_FRAME_HEIGHT() {
+        return OTHER_FRAME_HEIGHT;
+    }
+
     private Melody getMelody() {
         return this.melody;
     }
@@ -327,21 +344,7 @@ public class GUI{
         } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
-    }
-
-    public int getMAIN_FRAME_WIDTH() {
-        return this.MAIN_FRAME_WIDTH;
-    }
-
-    public int getMAIN_FRAME_HEIGHT() {
-        return this.MAIN_FRAME_HEIGHT;
-    }
-
-    public int getOTHER_FRAME_WIDTH() {
-        return this.OTHER_FRAME_WIDTH;
-    }
-
-    public int getOTHER_FRAME_HEIGHT() {
-        return this.OTHER_FRAME_HEIGHT;
+        rhythmInputPanel.setLength(getLength());
+        rhythmInputPanel.repaint();
     }
 }
