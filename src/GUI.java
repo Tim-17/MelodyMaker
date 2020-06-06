@@ -12,7 +12,7 @@ public class GUI{
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
     private JFrame frame, rhythmInput, chordsInput;
-    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic; // TODO: chordsInputPanel -> MyPanel
     private MyPanel rhythmInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private MutableComboBoxModel subdivModel;
@@ -45,7 +45,7 @@ public class GUI{
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
         rhythmInputPanel = new MyPanel();
-        chordsInputPanel = new JPanel();
+        chordsInputPanel = new JPanel(); // TODO: declare as MyPanel
         userInput = new JPanel();
         userInput.setLayout(new GridLayout(1,2));
         extraInput = new JPanel();
