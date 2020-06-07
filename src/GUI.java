@@ -325,7 +325,7 @@ public class GUI{
     }
 
     private void setLength(String timeSig, int numberMeasures, int smallestSubdiv) {
-        this.length = numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2)));
+        this.length = numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2))); // TODO: fix 15/16 bug -> charAt() must iterate through the String until it finds the "/"
     }
 
     // Other methods
