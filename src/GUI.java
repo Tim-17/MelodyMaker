@@ -325,7 +325,12 @@ public class GUI{
     }
 
     private void setLength(String timeSig, int numberMeasures, int smallestSubdiv) {
-        this.length = numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2))); // TODO: fix 15/16 bug -> charAt() must iterate through the String until it finds the "/"
+        if(timeSigCB.getSelectedIndex() != 7){
+            this.length = numberMeasures * Integer.parseInt(String.valueOf(timeSig.charAt(0))) * smallestSubdiv / Integer.parseInt(String.valueOf(timeSig.charAt(2)));
+        }
+        else {
+            this.length = numberMeasures * 15 * smallestSubdiv / 16; // fixes bug with 15/16
+        }
     }
 
     // Other methods
