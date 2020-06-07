@@ -21,8 +21,12 @@ public class MyPanel extends JPanel {
         int total = (getLength()+1)*clear + getLength()*rect;
         System.out.println("(getLength()+1)*Clear + getLength()*Rect: " + total);
         for(int i = 1; i <= getLength(); i++){
-            g.drawRoundRect(clear*i+rect*(i-1) , GUI.getOTHER_FRAME_HEIGHT()/3, rect, GUI.getOTHER_FRAME_HEIGHT()/3, 10, 10);
+            g.drawRoundRect(clear*i+rect*(i-1), GUI.getOTHER_FRAME_HEIGHT()/3, rect, GUI.getOTHER_FRAME_HEIGHT()/3, 10, 10);
+            int xcoordinates = clear*i+rect*(i-1);
+            System.out.println("X-coordinates for " + i + ". rectangle: " + xcoordinates);
         }
+        g.setColor(Color.RED);
+        g.drawRect(0,0,GUI.getOTHER_FRAME_WIDTH(),250); // -> actual frame size < GUI.getOTHER_FRAME_WIDTH()
     }
 
     public int getLength() {
