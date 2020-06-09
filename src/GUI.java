@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 
 import static java.awt.Toolkit.getDefaultToolkit;
@@ -19,6 +21,7 @@ public class GUI{
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
+    private boolean[] rhythm;
     private int length;
     private static final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
     private static final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
@@ -104,6 +107,7 @@ public class GUI{
         smallestSubdivL = new JLabel("Smallest Subdivision: ");
         setRhythmEntered(false);
         setChordsEntered(false);
+
         setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
 
         // GUI structuring
@@ -180,6 +184,31 @@ public class GUI{
             public void actionPerformed(ActionEvent e){
                 rhythmInput.setVisible(true);
                 System.out.println("Tatsächliche Breite: " + rhythmInput.getWidth());
+            }
+        });
+
+        rhythmInputPanel.addMouseListener(new MouseListener(){
+            public void mouseClicked(MouseEvent e){
+                int clear = (getOTHER_FRAME_WIDTH()/4)/(getLength()+1);
+                int rect = (getOTHER_FRAME_WIDTH()*3/4)/getLength();
+                for(int i = 1; i <= getLength(); i++){
+                    if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && getOTHER_FRAME_HEIGHT()/3 <= e.getY() && e.getY() <= getOTHER_FRAME_HEIGHT()*2/3){
+                        getRhythm()[i-1] = !getRhythm()[i-1];
+                        // TODO: color true rectangles
+                    }
+                }
+            }
+            public void mousePressed(MouseEvent e){
+
+            }
+            public void mouseReleased(MouseEvent e){
+
+            }
+            public void mouseEntered(MouseEvent e){
+
+            }
+            public void mouseExited(MouseEvent e){
+
             }
         });
 
@@ -335,6 +364,14 @@ public class GUI{
         this.chordsEntered = newMelodyEntered;
     }
 
+    public boolean[] getRhythm() {
+        return this.rhythm;
+    }
+
+    public void setRhythm(boolean[] rhythm) {
+        this.rhythm = rhythm;
+    }
+
     private int getLength() {
         return this.length;
     }
@@ -364,6 +401,7 @@ public class GUI{
         } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
+        setRhythm(new boolean[getLength()]);
         rhythmInputPanel.setLength(getLength());
         rhythmInputPanel.repaint();
     }
