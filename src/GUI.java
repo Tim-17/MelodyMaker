@@ -12,11 +12,11 @@ public class GUI{
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
     private JFrame frame, rhythmInput, chordsInput;
-    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, chordsDisplay, fillPanel, keyParameters, melodyDisplay, sheetMusic; // TODO: chordsInputPanel -> MyPanel
-    private MyPanel rhythmInputPanel;
+    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, fillPanel, keyParameters, melodyDisplay, sheetMusic; // TODO: chordsInputPanel -> MyPanel
+    private RhythmPanel rhythmInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private MutableComboBoxModel subdivModel;
-    private JButton enterRhythmB, deleteRhythm, enterChordsB, deleteChords, createMelodyB, playMelodyB;
+    private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
     private int length;
@@ -26,8 +26,8 @@ public class GUI{
     private static final int OTHER_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.5);
     
     public GUI(){
-        // Initialising
 
+        // Initialising
         try{
             whole = new ImageIcon(ImageIO.read(new File("res/edits/whole_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
             half = new ImageIcon(ImageIO.read(new File("res/edits/half_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
@@ -44,7 +44,7 @@ public class GUI{
         chordsInput = new JFrame("Enter your chords");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
-        rhythmInputPanel = new MyPanel();
+        rhythmInputPanel = new RhythmPanel();
         chordsInputPanel = new JPanel(); // TODO: declare as MyPanel
         userInput = new JPanel();
         userInput.setLayout(new GridLayout(1,2));
@@ -54,8 +54,14 @@ public class GUI{
         keyChoice.setLayout(new GridLayout(1,2));
         rhythmDisplay = new JPanel();
         rhythmDisplay.setLayout(new BorderLayout());
+        rhythmFramePanel = new JPanel();
+        rhythmFramePanel.setPreferredSize(new Dimension(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT()));
+        rhythmFramePanel.setLayout(new BorderLayout());
         chordsDisplay = new JPanel();
         chordsDisplay.setLayout(new BorderLayout());
+        chordsFramePanel = new JPanel();
+        chordsFramePanel.setPreferredSize(new Dimension(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT()));
+        chordsFramePanel.setLayout(new BorderLayout());
         fillPanel = new JPanel();
         fillPanel.setLayout(new GridLayout(2,1));
         keyParameters = new JPanel();
@@ -82,9 +88,11 @@ public class GUI{
         smallestSubdivCB = new JComboBox(subdivModel);
         smallestSubdivCB.setSelectedIndex(4);
         enterRhythmB = new JButton("Enter rhythm");
+        saveRhythmB = new JButton("Save rhythm");
         deleteRhythm = new JButton("Delete rhythm");
         deleteRhythm.setVisible(false);
         enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord creation function
+        saveChordsB = new JButton("Save chords");
         deleteChords = new JButton("Delete chords");
         deleteChords.setVisible(false);
         createMelodyB = new JButton("Create melody");
@@ -128,19 +136,25 @@ public class GUI{
         keyChoice.add(keyCB);
         keyChoice.add(majorCB);
 
-        rhythmInput.setSize(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT());
+        rhythmInput.add(rhythmFramePanel);
+        rhythmInput.pack();
         rhythmInput.setResizable(false);
         rhythmInput.setLocationRelativeTo(frame);
         rhythmInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         rhythmInput.setVisible(false);
-        rhythmInput.add(rhythmInputPanel);
 
-        chordsInput.setSize(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT());
+        rhythmFramePanel.add(rhythmInputPanel, BorderLayout.CENTER);
+        rhythmFramePanel.add(saveRhythmB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+
+        chordsInput.add(chordsFramePanel);
+        chordsInput.pack();
         chordsInput.setResizable(false);
         chordsInput.setLocationRelativeTo(frame);
         chordsInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         chordsInput.setVisible(false);
-        chordsInput.add(chordsInputPanel);
+
+        chordsFramePanel.add(chordsInputPanel, BorderLayout.CENTER);
+        chordsFramePanel.add(saveChordsB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // add FlowLayout.RIGHT
         chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // add FlowLayout.RIGHT
@@ -165,6 +179,7 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 rhythmInput.setVisible(true);
+                System.out.println("Tatsächliche Breite: " + rhythmInput.getWidth());
             }
         });
 

@@ -1,12 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class MyPanel extends JPanel {
+public class RhythmPanel extends JPanel {
 
     private int length;
 
-    public MyPanel() {
+    public RhythmPanel() {
        setLength(16);
+    }
+
+    @Override
+    public Dimension getPreferredSize(){
+        return new Dimension(GUI.getOTHER_FRAME_WIDTH(), GUI.getOTHER_FRAME_HEIGHT());
     }
 
     public void paintComponent(Graphics g) {
@@ -22,8 +27,6 @@ public class MyPanel extends JPanel {
         System.out.println("(getLength()+1)*Clear + getLength()*Rect: " + total);
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), GUI.getOTHER_FRAME_HEIGHT()/3, rect, GUI.getOTHER_FRAME_HEIGHT()/3, 10, 10);
-            int xcoordinates = clear*i+rect*(i-1);
-            System.out.println("X-coordinates for " + i + ". rectangle: " + xcoordinates);
         }
         g.setColor(Color.RED);
         g.drawRect(0,0,GUI.getOTHER_FRAME_WIDTH(),250); // -> actual frame size < GUI.getOTHER_FRAME_WIDTH()
