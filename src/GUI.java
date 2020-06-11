@@ -109,6 +109,7 @@ public class GUI{
         setChordsEntered(false);
 
         setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
+        setRhythm(new boolean[getLength()]);
 
         // GUI structuring
 
@@ -195,9 +196,10 @@ public class GUI{
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && getOTHER_FRAME_HEIGHT()/3 <= e.getY() && e.getY() <= getOTHER_FRAME_HEIGHT()*2/3){
                         getRhythm()[i-1] = !getRhythm()[i-1];
-                        // TODO: color true rectangles
                     }
                 }
+                rhythmInputPanel.setRhythm(getRhythm());
+                rhythmInputPanel.repaint();
             }
             public void mousePressed(MouseEvent e){
 
