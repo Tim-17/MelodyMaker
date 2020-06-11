@@ -185,7 +185,6 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 rhythmInput.setVisible(true);
-                System.out.println("Tatsächliche Breite: " + rhythmInput.getWidth());
             }
         });
 
@@ -212,6 +211,19 @@ public class GUI{
             }
             public void mouseExited(MouseEvent e){
 
+            }
+        });
+
+        saveRhythmB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rhythmInput.setVisible(false);
+                setRhythmEntered(false);
+                for(boolean beat : getRhythm()){
+                    if(beat){
+                        setRhythmEntered(true);
+                    }
+                }
             }
         });
 

@@ -20,8 +20,6 @@ public class RhythmPanel extends JPanel {
         super.paintComponent(g);
         int clear = (GUI.getOTHER_FRAME_WIDTH()/4)/(getLength()+1);
         int rect = (GUI.getOTHER_FRAME_WIDTH()*3/4)/getLength();
-        int total = (getLength()+1)*clear + getLength()*rect;
-        System.out.println("(getLength()+1)*Clear + getLength()*Rect: " + total);
         g.setColor(Color.BLACK);
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), GUI.getOTHER_FRAME_HEIGHT()/3, rect, GUI.getOTHER_FRAME_HEIGHT()/3, 10, 10);
