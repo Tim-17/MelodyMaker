@@ -1,10 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.File;
 
 import static java.awt.Toolkit.getDefaultToolkit;
@@ -21,7 +18,7 @@ public class GUI{
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
-    private boolean[] rhythm;
+    private boolean[] rhythm, bufferRhythm;
     private int length;
     private static final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
     private static final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
@@ -160,8 +157,8 @@ public class GUI{
         chordsFramePanel.add(chordsInputPanel, BorderLayout.CENTER);
         chordsFramePanel.add(saveChordsB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
-        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // add FlowLayout.RIGHT
-        chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // add FlowLayout.RIGHT
+        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+        chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         fillPanel.add(keyParameters);
         fillPanel.add(new JLabel());
@@ -188,16 +185,46 @@ public class GUI{
             }
         });
 
+        rhythmInput.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                super.componentShown(e);
+                setBufferRhythm(getRhythm());
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                super.componentHidden(e);
+                rhythmInputPanel.setRhythm(getRhythm());
+            }
+        });
+
         rhythmInputPanel.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e){
                 int clear = (getOTHER_FRAME_WIDTH()/4)/(getLength()+1);
                 int rect = (getOTHER_FRAME_WIDTH()*3/4)/getLength();
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && getOTHER_FRAME_HEIGHT()/3 <= e.getY() && e.getY() <= getOTHER_FRAME_HEIGHT()*2/3){
-                        getRhythm()[i-1] = !getRhythm()[i-1];
+                        getBufferRhythm()[i-1] = !getBufferRhythm()[i-1];
+                        break;
                     }
                 }
-                rhythmInputPanel.setRhythm(getRhythm());
+
+                // TODO: fix issue with bufferrhythm being identical with rhythm
+
+                System.out.println("BufferRhythm: ");
+                for(int i = 1; i <= getLength(); i++){
+                    System.out.print(getBufferRhythm()[i-1] + ", ");
+                }
+                System.out.println("");
+
+                System.out.println("Rhythm: ");
+                for(int i = 1; i <= getLength(); i++){
+                    System.out.print(getRhythm()[i-1] + ", ");
+                }
+                System.out.println("");
+
+                rhythmInputPanel.setRhythm(getBufferRhythm());
                 rhythmInputPanel.repaint();
             }
             public void mousePressed(MouseEvent e){
@@ -214,15 +241,20 @@ public class GUI{
             }
         });
 
-        saveRhythmB.addActionListener(new ActionListener() {
+        saveRhythmB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                setRhythm(getBufferRhythm());
                 rhythmInput.setVisible(false);
                 setRhythmEntered(false);
                 for(boolean beat : getRhythm()){
                     if(beat){
                         setRhythmEntered(true);
+                        break;
                     }
+                }
+                if(getRhythmEntered()){
+                    deleteRhythm.setVisible(true);
                 }
             }
         });
@@ -230,7 +262,11 @@ public class GUI{
         deleteRhythm.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                setRhythm(new boolean[getLength()]);
+                rhythmInputPanel.setRhythm(getRhythm());
+                rhythmInputPanel.repaint();
+                setRhythmEntered(false);
+                deleteRhythm.setVisible(false);
             }
         });
 
@@ -367,16 +403,16 @@ public class GUI{
         return this.rhythmEntered;
     }
 
-    private void setRhythmEntered(boolean newRhythmEntered) {
-        this.rhythmEntered = newRhythmEntered;
+    private void setRhythmEntered(boolean rhythmEntered) {
+        this.rhythmEntered = rhythmEntered;
     }
 
     private boolean getChordsEntered() {
         return this.chordsEntered;
     }
 
-    private void setChordsEntered(boolean newMelodyEntered) {
-        this.chordsEntered = newMelodyEntered;
+    private void setChordsEntered(boolean chordsEntered) {
+        this.chordsEntered = chordsEntered;
     }
 
     public boolean[] getRhythm() {
@@ -385,6 +421,14 @@ public class GUI{
 
     public void setRhythm(boolean[] rhythm) {
         this.rhythm = rhythm;
+    }
+
+    public boolean[] getBufferRhythm() {
+        return this.bufferRhythm;
+    }
+
+    public void setBufferRhythm(boolean[] bufferRhythm) {
+        this.bufferRhythm = bufferRhythm;
     }
 
     private int getLength() {
