@@ -121,7 +121,6 @@ public class GUI{
         frame.setSize(getMAIN_FRAME_WIDTH(), getMAIN_FRAME_HEIGHT());
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
 
         frameBorderPanel.add(userInput, BorderLayout.CENTER);
         frameBorderPanel.add(melodyDisplay, BorderLayout.SOUTH);
@@ -176,6 +175,8 @@ public class GUI{
         melodyDisplay.add(melodyL, BorderLayout.NORTH);
         melodyDisplay.add(sheetMusic, BorderLayout.CENTER);
         melodyDisplay.add(playMelodyB, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
 
         // ActionListeners
 
