@@ -91,7 +91,7 @@ public class GUI{
         saveRhythmB = new JButton("Save rhythm");
         deleteRhythm = new JButton("Delete rhythm");
         deleteRhythm.setVisible(false);
-        enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord creation function
+        enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord only creation function
         saveChordsB = new JButton("Save chords");
         deleteChords = new JButton("Delete chords");
         deleteChords.setVisible(false);
@@ -210,7 +210,7 @@ public class GUI{
                     }
                 }
 
-                // TODO: fix issue with bufferrhythm being identical with rhythm
+                // TODO: fix issue with bufferRhythm being identical with rhythm
 
                 System.out.println("BufferRhythm: ");
                 for(int i = 1; i <= getLength(); i++){
@@ -250,11 +250,14 @@ public class GUI{
                 for(boolean beat : getRhythm()){
                     if(beat){
                         setRhythmEntered(true);
+                        deleteRhythm.setVisible(true);
+                        enterRhythmB.setText("Edit rhythm");
                         break;
                     }
                 }
-                if(getRhythmEntered()){
-                    deleteRhythm.setVisible(true);
+                if(!getRhythmEntered()){
+                    deleteRhythm.setVisible(false);
+                    enterRhythmB.setText("Enter rhythm");
                 }
             }
         });
@@ -267,6 +270,7 @@ public class GUI{
                 rhythmInputPanel.repaint();
                 setRhythmEntered(false);
                 deleteRhythm.setVisible(false);
+                enterRhythmB.setText("Enter rhythm");
             }
         });
 
