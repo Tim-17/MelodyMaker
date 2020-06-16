@@ -20,10 +20,6 @@ public class GUI{
     private boolean rhythmEntered, chordsEntered;
     private boolean[] rhythm, bufferRhythm;
     private int length;
-    private static final int MAIN_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.75);
-    private static final int MAIN_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.75);
-    private static final int OTHER_FRAME_WIDTH = (int)(getDefaultToolkit().getScreenSize().getWidth()*0.5);
-    private static final int OTHER_FRAME_HEIGHT = (int)(getDefaultToolkit().getScreenSize().getHeight()*0.5);
     
     public GUI(){
 
@@ -55,12 +51,12 @@ public class GUI{
         rhythmDisplay = new JPanel();
         rhythmDisplay.setLayout(new BorderLayout());
         rhythmFramePanel = new JPanel();
-        rhythmFramePanel.setPreferredSize(new Dimension(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT()));
+        rhythmFramePanel.setPreferredSize(new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT));
         rhythmFramePanel.setLayout(new BorderLayout());
         chordsDisplay = new JPanel();
         chordsDisplay.setLayout(new BorderLayout());
         chordsFramePanel = new JPanel();
-        chordsFramePanel.setPreferredSize(new Dimension(getOTHER_FRAME_WIDTH(), getOTHER_FRAME_HEIGHT()));
+        chordsFramePanel.setPreferredSize(new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT));
         chordsFramePanel.setLayout(new BorderLayout());
         fillPanel = new JPanel();
         fillPanel.setLayout(new GridLayout(2,1));
@@ -116,7 +112,7 @@ public class GUI{
         } catch (Exception e){
             System.out.println("Oooops, something went wrong!");
         }
-        frame.setSize(getMAIN_FRAME_WIDTH(), getMAIN_FRAME_HEIGHT());
+        frame.setSize(Main.MAIN_FRAME_WIDTH, Main.MAIN_FRAME_HEIGHT);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -201,10 +197,10 @@ public class GUI{
 
         rhythmInputPanel.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e){
-                int clear = (getOTHER_FRAME_WIDTH()/4)/(getLength()+1);
-                int rect = (getOTHER_FRAME_WIDTH()*3/4)/getLength();
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
                 for(int i = 1; i <= getLength(); i++){
-                    if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && getOTHER_FRAME_HEIGHT()/3 <= e.getY() && e.getY() <= getOTHER_FRAME_HEIGHT()*2/3){
+                    if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
                         getBufferRhythm()[i-1] = !getBufferRhythm()[i-1];
                         break;
                     }
@@ -222,7 +218,7 @@ public class GUI{
                 for(int i = 1; i <= getLength(); i++){
                     System.out.print(getRhythm()[i-1] + ", ");
                 }
-                System.out.println("");
+                System.out.println("\n");
 
                 rhythmInputPanel.setRhythm(getBufferRhythm());
                 rhythmInputPanel.repaint();
@@ -378,22 +374,6 @@ public class GUI{
     }
 
     // Getters & Setters
-
-    public static int getMAIN_FRAME_WIDTH() {
-        return MAIN_FRAME_WIDTH;
-    }
-
-    public static int getMAIN_FRAME_HEIGHT() {
-        return MAIN_FRAME_HEIGHT;
-    }
-
-    public static int getOTHER_FRAME_WIDTH() {
-        return OTHER_FRAME_WIDTH;
-    }
-
-    public static int getOTHER_FRAME_HEIGHT() {
-        return OTHER_FRAME_HEIGHT;
-    }
 
     private Melody getMelody() {
         return this.melody;
