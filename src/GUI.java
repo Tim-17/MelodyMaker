@@ -185,7 +185,11 @@ public class GUI{
             @Override
             public void componentShown(ComponentEvent e) {
                 super.componentShown(e);
-                setBufferRhythm(getRhythm());
+                // setBufferRhythm(getRhythm());
+                setBufferRhythm(new boolean[getLength()]); // TODO: use this approach for every setter
+                for(int i = 1; i <= getLength(); i++){
+                    getBufferRhythm()[i-1] = getRhythm()[i-1];
+                }
             }
 
             @Override
@@ -205,21 +209,6 @@ public class GUI{
                         break;
                     }
                 }
-
-                // TODO: fix issue with bufferRhythm being identical with rhythm
-
-                System.out.println("BufferRhythm: ");
-                for(int i = 1; i <= getLength(); i++){
-                    System.out.print(getBufferRhythm()[i-1] + ", ");
-                }
-                System.out.println("");
-
-                System.out.println("Rhythm: ");
-                for(int i = 1; i <= getLength(); i++){
-                    System.out.print(getRhythm()[i-1] + ", ");
-                }
-                System.out.println("\n");
-
                 rhythmInputPanel.setRhythm(getBufferRhythm());
                 rhythmInputPanel.repaint();
             }
@@ -262,6 +251,7 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 setRhythm(new boolean[getLength()]);
+                setBufferRhythm(new boolean[getLength()]);
                 rhythmInputPanel.setRhythm(getRhythm());
                 rhythmInputPanel.repaint();
                 setRhythmEntered(false);
@@ -445,7 +435,9 @@ public class GUI{
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
         setRhythm(new boolean[getLength()]);
+        setBufferRhythm(new boolean[getLength()]);
         rhythmInputPanel.setLength(getLength());
+        rhythmInputPanel.setRhythm(getRhythm());
         rhythmInputPanel.repaint();
     }
 }
