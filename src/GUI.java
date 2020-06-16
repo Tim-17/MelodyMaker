@@ -274,10 +274,31 @@ public class GUI{
             }
         });
 
+        // TODO: improve project structure by always using an instance of the Melody class to store all the rhythmic & chords information so that the GUI class actually only deals with GUI stuff
+
         createMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 setMelody(new Melody(getLength()));
+                if(majorCB.getSelectedIndex() == 0){
+                    getMelody().createKeyNotes((String)keyCB.getSelectedItem(), true);
+                } else {
+                    getMelody().createKeyNotes((String)keyCB.getSelectedItem(), false);
+                }
+                if(getRhythmEntered()){
+                    getMelody().setRhythm(getRhythm());
+                } else {
+                    getMelody().createRhythm();
+                }
+                if(getChordsEntered()){
+                    // getMelody().createChordsMelody(getChords());
+                } else {
+                    getMelody().createMelody();
+                }
+                for(int i = 1; i <= getLength(); i++){
+                    System.out.print("[" + getMelody().getMelody()[i-1] + "] ");
+                }
+                System.out.println("");
             }
         });
 

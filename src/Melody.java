@@ -102,7 +102,7 @@ public class Melody {
         if(newPercentage >= 0 && newPercentage <= 1){
             this.iiPercentage = newPercentage;
         } else {
-            System.out.println("The given iPercentage is out of bounds!");
+            System.out.println("The given iiPercentage is out of bounds!");
         }
     }
 
@@ -114,7 +114,7 @@ public class Melody {
         if(newPercentage >= 0 && newPercentage <= 1){
             this.iiiPercentage = newPercentage;
         } else {
-            System.out.println("The given iPercentage is out of bounds!");
+            System.out.println("The given iiiPercentage is out of bounds!");
         }
     }
 
@@ -126,7 +126,7 @@ public class Melody {
         if(newPercentage >= 0 && newPercentage <= 1){
             this.ivPercentage = newPercentage;
         } else {
-            System.out.println("The given iPercentage is out of bounds!");
+            System.out.println("The given ivPercentage is out of bounds!");
         }
     }
 
@@ -138,7 +138,7 @@ public class Melody {
         if(newPercentage >= 0 && newPercentage <= 1){
             this.vPercentage = newPercentage;
         } else {
-            System.out.println("The given iPercentage is out of bounds!");
+            System.out.println("The given vPercentage is out of bounds!");
         }
     }
 
@@ -150,7 +150,7 @@ public class Melody {
         if(newPercentage >= 0 && newPercentage <= 1){
             this.viPercentage = newPercentage;
         } else {
-            System.out.println("The given iPercentage is out of bounds!");
+            System.out.println("The given viPercentage is out of bounds!");
         }
     }
 
