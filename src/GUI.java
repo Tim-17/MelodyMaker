@@ -4,15 +4,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 
-import static java.awt.Toolkit.getDefaultToolkit;
-
 public class GUI{
 
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
-    private JFrame frame, rhythmInput, chordsInput;
-    private JPanel frameBorderPanel, chordsInputPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, fillPanel, keyParameters, melodyDisplay, sheetMusic; // TODO: chordsInputPanel -> MyPanel
+    private JFrame frame, rhythmInput, chordsInput, oneChordInput;
+    private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private RhythmPanel rhythmInputPanel;
+    private ChordsPanel chordsInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
     private MutableComboBoxModel subdivModel;
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, deleteChords, createMelodyB, playMelodyB;
@@ -38,10 +37,11 @@ public class GUI{
         frame = new JFrame("MelodyMaker");
         rhythmInput = new JFrame("Enter your rhythm");
         chordsInput = new JFrame("Enter your chords");
+        oneChordInput = new JFrame("Build your chord");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
         rhythmInputPanel = new RhythmPanel();
-        chordsInputPanel = new JPanel(); // TODO: declare as MyPanel
+        chordsInputPanel = new ChordsPanel();
         userInput = new JPanel();
         userInput.setLayout(new GridLayout(1,2));
         extraInput = new JPanel();
