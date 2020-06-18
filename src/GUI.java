@@ -18,7 +18,8 @@ public class GUI{
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
     private boolean[] rhythm, bufferRhythm;
-    private int length;
+    private String[][] chords;
+    private int length, currentChordIndex;
     
     public GUI(){
 
@@ -103,6 +104,7 @@ public class GUI{
 
         setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
         setRhythm(new boolean[getLength()]);
+        setChords(new String[getLength()][]);
 
         // GUI structuring
 
@@ -200,6 +202,7 @@ public class GUI{
         });
 
         rhythmInputPanel.addMouseListener(new MouseListener(){
+            @Override
             public void mouseClicked(MouseEvent e){
                 int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
                 int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
@@ -212,15 +215,23 @@ public class GUI{
                 rhythmInputPanel.setRhythm(getBufferRhythm());
                 rhythmInputPanel.repaint();
             }
+
+            @Override
             public void mousePressed(MouseEvent e){
 
             }
+
+            @Override
             public void mouseReleased(MouseEvent e){
 
             }
+
+            @Override
             public void mouseEntered(MouseEvent e){
 
             }
+
+            @Override
             public void mouseExited(MouseEvent e){
 
             }
@@ -263,6 +274,47 @@ public class GUI{
         enterChordsB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
+                chordsInput.setVisible(true);
+            }
+        });
+
+        chordsInputPanel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
+                for(int i = 1; i <= getLength(); i++){
+                    if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
+                        setCurrentChordIndex(i-1);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+
+            }
+        });
+
+        saveChordsB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 
             }
         });
@@ -426,6 +478,14 @@ public class GUI{
         this.bufferRhythm = bufferRhythm;
     }
 
+    public String[][] getChords() {
+        return this.chords;
+    }
+
+    public void setChords(String[][] chords) {
+        this.chords = chords;
+    }
+
     private int getLength() {
         return this.length;
     }
@@ -437,6 +497,14 @@ public class GUI{
         else {
             this.length = numberMeasures * 15 * smallestSubdiv / 16; // fixes bug with 15/16
         }
+    }
+
+    public int getCurrentChordIndex() {
+        return this.currentChordIndex;
+    }
+
+    public void setCurrentChordIndex(int currentChordIndex) {
+        this.currentChordIndex = currentChordIndex;
     }
 
     // Other methods
@@ -457,8 +525,27 @@ public class GUI{
         }
         setRhythm(new boolean[getLength()]);
         setBufferRhythm(new boolean[getLength()]);
+        setChords(new String[getLength()][]);
         rhythmInputPanel.setLength(getLength());
         rhythmInputPanel.setRhythm(getRhythm());
         rhythmInputPanel.repaint();
+        chordsInputPanel.setLength(getLength());
+        chordsInputPanel.repaint();
+    }
+
+    private void addChordElement(String note, int beat){
+        if(getChords()[beat] == null){
+            getChords()[beat] = new String[]{note};
+        } else {
+
+        }
+    }
+
+    private void removeChordElement(String note, int beat){
+        if(getChords()[beat].length == 1){
+            getChords()[beat] = null;
+        } else {
+
+        }
     }
 }
