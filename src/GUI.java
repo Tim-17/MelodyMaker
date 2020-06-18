@@ -542,10 +542,6 @@ public class GUI{
     }
 
     private void removeChordElement(String note, int beat){
-        if(getChords()[beat].length == 1){
-            getChords()[beat] = null;
-        } else {
 
-        }
     }
 }
