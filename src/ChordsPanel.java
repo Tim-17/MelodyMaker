@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class ChordsPanel extends JPanel {
+public class ChordsPanel extends JPanel{
 
     private int length;
 
@@ -14,7 +14,7 @@ public class ChordsPanel extends JPanel {
         return new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
     }
 
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g){
         super.paintComponent(g);
         int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
         int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
@@ -24,11 +24,11 @@ public class ChordsPanel extends JPanel {
         }
     }
 
-    public int getLength() {
+    public int getLength(){
         return this.length;
     }
 
-    public void setLength(int length) {
+    public void setLength(int length){
         this.length = length;
     }
 

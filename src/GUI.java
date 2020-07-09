@@ -8,6 +8,7 @@ public class GUI{
 
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
     private Melody melody;
+    private MusicPlayer musicPlayer;
     private JFrame frame, rhythmInput, chordsInput, oneChordInput;
     private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private RhythmPanel rhythmInputPanel;
@@ -35,6 +36,7 @@ public class GUI{
             System.out.println("Oooops, something went wrong!");
         }
 
+        musicPlayer = new MusicPlayer();
         frame = new JFrame("MelodyMaker");
         rhythmInput = new JFrame("Enter your rhythm");
         chordsInput = new JFrame("Enter your chords");
@@ -357,7 +359,7 @@ public class GUI{
         playMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                getMusicPlayer().playNote(getMusicPlayer().getNotes().get("C"), 3);
             }
         });
 
@@ -444,6 +446,14 @@ public class GUI{
 
     private void setMelody(Melody melody) {
         this.melody = melody;
+    }
+
+    public MusicPlayer getMusicPlayer(){
+        return this.musicPlayer;
+    }
+
+    public void setMusicPlayer(MusicPlayer musicPlayer){
+        this.musicPlayer = musicPlayer;
     }
 
     private boolean getRhythmEntered() {
