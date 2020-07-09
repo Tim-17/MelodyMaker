@@ -359,7 +359,30 @@ public class GUI{
         playMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                getMusicPlayer().playNote(getMusicPlayer().getNotes().get("C"), 3);
+                if(getMelody().getMelody() != null){ // TODO: get this line to work properly -> prevent the attempt of playing a melody when there is none
+                    if(!getRhythmEntered()){
+                        setRhythm(getMelody().getRhythm());
+                    }
+                    for(int i = 0; i < getLength(); i++){
+                        /*
+                        new Thread(){
+                            public void run(){
+                                getMusicPlayer().playNote(getMusicPlayer().getNotes().get("click"), 500); // TODO: get click to work
+                            }
+                        }.start();
+                        */
+                        if(getRhythm()[i]){
+                            getMusicPlayer().playNote(getMusicPlayer().getNotes().get(getMelody().getMelody()[i]), 10000); // TODO: check whether a higher octave is needed based on base note
+                        } else {
+                            try{
+                                Thread.sleep(500);
+                            }
+                            catch(Exception k) {
+                                System.out.println("Whoooops...");
+                            }
+                        }
+                    }
+                }
             }
         });
 
