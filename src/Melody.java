@@ -4,8 +4,9 @@ public class Melody {
     private String[] melody;
     private final String[] allNotes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     private String[] keyNotes;
-    private int length;
-    private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage, viiPercentage;
+    private int length, changeIndex;
+    private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage;
+    private boolean changeIndexFound;
 
     public Melody(int length){
         setKeyNotes(new String[7]);
@@ -68,6 +69,14 @@ public class Melody {
         } else {
             System.out.println("The given length is too short!");
         }
+    }
+
+    public int getChangeIndex(){
+        return this.changeIndex;
+    }
+
+    public void setChangeIndex(int changeIndex){
+        this.changeIndex = changeIndex;
     }
 
     private double getPausePercentage(){
@@ -154,6 +163,14 @@ public class Melody {
         }
     }
 
+    public boolean getChangeIndexFound(){
+        return this.changeIndexFound;
+    }
+
+    public void setChangeIndexFound(boolean changeIndexFound){
+        this.changeIndexFound = changeIndexFound;
+    }
+
     // Actual Methods
 
     public void createRhythm(){
@@ -171,6 +188,7 @@ public class Melody {
 
     public void createKeyNotes(String tonic, boolean major){
         getKeyNotes()[0] = tonic;
+        setChangeIndexFound(false);
         int currentIndex = -1;
         // Find index of tonic
         for(int i = 0; i < getAllNotes().length; i++) {
@@ -188,6 +206,10 @@ public class Melody {
                         currentIndex = currentIndex + next;
                     } else {
                         currentIndex = currentIndex + next - getAllNotes().length;
+                        if(!getChangeIndexFound()){
+                            setChangeIndex(i);
+                            setChangeIndexFound(true);
+                        }
                     }
                     getKeyNotes()[i] = getAllNotes()[currentIndex];
                     i++;
@@ -199,6 +221,10 @@ public class Melody {
                         currentIndex = currentIndex + next;
                     } else {
                         currentIndex = currentIndex + next - getAllNotes().length;
+                        if(!getChangeIndexFound()){
+                            setChangeIndex(i);
+                            setChangeIndexFound(true);
+                        }
                     }
                     getKeyNotes()[i] = getAllNotes()[currentIndex];
                     i++;
@@ -207,6 +233,15 @@ public class Melody {
         } else {
             System.out.println("The given tonic is not part of the Western note system!");
         }
+    }
+
+    public int findKeyNoteIndex(String keyNote){
+        for(int i = 0; i < getKeyNotes().length; i++){
+            if(getKeyNotes()[i].equals(keyNote)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void createMelody(){

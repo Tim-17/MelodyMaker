@@ -343,6 +343,7 @@ public class GUI{
                     getMelody().setRhythm(getRhythm());
                 } else {
                     getMelody().createRhythm();
+                    setRhythm(getMelody().getRhythm());
                 }
                 if(getChordsEntered()){
                     // getMelody().createChordsMelody(getChords());
@@ -359,27 +360,22 @@ public class GUI{
         playMelodyB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                if(getMelody().getMelody() != null){ // TODO: get this line to work properly -> prevent the attempt of playing a melody when there is none
-                    if(!getRhythmEntered()){
-                        setRhythm(getMelody().getRhythm());
-                    }
+                if(getMelody() != null){
                     for(int i = 0; i < getLength(); i++){
-                        /*
-                        new Thread(){
-                            public void run(){
-                                getMusicPlayer().playNote(getMusicPlayer().getNotes().get("click"), 500); // TODO: get click to work
-                            }
-                        }.start();
-                        */
                         if(getRhythm()[i]){
-                            getMusicPlayer().playNote(getMusicPlayer().getNotes().get(getMelody().getMelody()[i]), 10000); // TODO: check whether a higher octave is needed based on base note
+                            if(getMelody().findKeyNoteIndex(getMelody().getMelody()[i]) < getMelody().getChangeIndex()){
+                                getMusicPlayer().playNote(getMusicPlayer().getNotes().get(getMelody().getMelody()[i]), 500);
+                            } else {
+                                getMusicPlayer().playNote(getMusicPlayer().getNotes().get(getMelody().getMelody()[i] + "'"), 500);
+                            }
                         } else {
-                            try{
-                                Thread.sleep(500);
-                            }
-                            catch(Exception k) {
-                                System.out.println("Whoooops...");
-                            }
+                            getMusicPlayer().playNote(getMusicPlayer().getNotes().get("click"), 500);
+                        }
+                        try{
+                            Thread.sleep(500);
+                        }
+                        catch(Exception k) {
+                            System.out.println("Whoooops...");
                         }
                     }
                 }

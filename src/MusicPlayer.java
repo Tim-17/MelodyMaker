@@ -45,7 +45,7 @@ public class MusicPlayer{
         getNotes().put("A'", "res/SynthesizedPianoNotes/Piano122.mp3");
         getNotes().put("A#'", "res/SynthesizedPianoNotes/Piano123.mp3");
         getNotes().put("B'", "res/SynthesizedPianoNotes/Piano124.mp3");
-        getNotes().put("click", "res/SynthesizedPianoNotes/click.wav");
+        getNotes().put("click", "res/SynthesizedPianoNotes/click.mp3");
     }
 
     public void playNote(final String path, int duration){
