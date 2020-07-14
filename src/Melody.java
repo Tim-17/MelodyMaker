@@ -3,13 +3,14 @@ public class Melody {
     private boolean[] rhythm;
     private String[] melody;
     private final String[] allNotes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-    private String[] keyNotes;
+    private String[] keyNotes, extraNotes;
     private int length, changeIndex;
     private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage;
     private boolean changeIndexFound;
 
     public Melody(int length){
         setKeyNotes(new String[7]);
+        setExtraNotes(new String[5]);
         setLength(length);
         setPausePercentage(0.75);
         // This percentage distribution lays emphasis on I and V -> can always be manipulated for different results
@@ -57,6 +58,14 @@ public class Melody {
 
     public void setKeyNotes(String[] newKeyNotes) {
         this.keyNotes = newKeyNotes;
+    }
+
+    public String[] getExtraNotes() {
+        return this.extraNotes;
+    }
+
+    public void setExtraNotes(String[] extraNotes) {
+        this.extraNotes = extraNotes;
     }
 
     public int getLength(){
@@ -233,11 +242,31 @@ public class Melody {
         } else {
             System.out.println("The given tonic is not part of the Western note system!");
         }
+        createExtraNotes();
+    }
+
+    private void createExtraNotes(){
+        int j = 0;
+        for(int i = 0; i < getAllNotes().length; i++){
+           if(findKeyNoteIndex(getAllNotes()[i]) == -1){
+               getExtraNotes()[j] = getAllNotes()[i];
+               j++;
+           }
+       }
     }
 
     public int findKeyNoteIndex(String keyNote){
         for(int i = 0; i < getKeyNotes().length; i++){
             if(getKeyNotes()[i].equals(keyNote)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int findAllNotesIndex(String note){
+        for(int i = 0; i < getAllNotes().length; i++){
+            if(getAllNotes()[i].equals(note)){
                 return i;
             }
         }

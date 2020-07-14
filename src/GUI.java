@@ -7,19 +7,19 @@ import java.io.File;
 public class GUI{
 
     private ImageIcon whole, half, quarter, eighth, sixteenth, thirtysecond;
-    private Melody melody;
+    private Melody melody, calcMelody;
     private MusicPlayer musicPlayer;
     private JFrame frame, rhythmInput, chordsInput, oneChordInput;
-    private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, oneChordPanel, oneChordContentPanel, fillPanel, keyParameters, melodyDisplay, sheetMusic;
     private RhythmPanel rhythmInputPanel;
     private ChordsPanel chordsInputPanel;
-    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB;
-    private MutableComboBoxModel subdivModel;
-    private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, deleteChords, createMelodyB, playMelodyB;
+    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordBaseNoteCB;
+    private MutableComboBoxModel subdivModel, chordBaseNoteModel;
+    private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL;
     private boolean rhythmEntered, chordsEntered;
     private boolean[] rhythm, bufferRhythm;
-    private String[][] chords;
+    private Chord[] chords;
     private int length, currentChordIndex;
     
     public GUI(){
@@ -61,6 +61,11 @@ public class GUI{
         chordsFramePanel = new JPanel();
         chordsFramePanel.setPreferredSize(new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT));
         chordsFramePanel.setLayout(new BorderLayout());
+        oneChordPanel = new JPanel();
+        oneChordPanel.setPreferredSize(new Dimension(Main.CHORD_FRAME_WIDTH, Main.CHORD_FRAME_HEIGHT));
+        oneChordPanel.setLayout(new BorderLayout());
+        oneChordContentPanel = new JPanel();
+        oneChordContentPanel.setLayout(new GridLayout(1,3));
         fillPanel = new JPanel();
         fillPanel.setLayout(new GridLayout(2,1));
         keyParameters = new JPanel();
@@ -92,6 +97,7 @@ public class GUI{
         deleteRhythm.setVisible(false);
         enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord only creation function
         saveChordsB = new JButton("Save chords");
+        saveOneChordB = new JButton("Save chord");
         deleteChords = new JButton("Delete chords");
         deleteChords.setVisible(false);
         createMelodyB = new JButton("Create melody");
@@ -105,8 +111,28 @@ public class GUI{
         setChordsEntered(false);
 
         setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
+        setCalcMelody(new Melody(getLength()));
+        updateCalcMelodyNotes();
         setRhythm(new boolean[getLength()]);
-        setChords(new String[getLength()][]);
+        setChords(new Chord[getLength()]);
+
+        chordBaseNoteModel = new DefaultComboBoxModel();
+        for(int i = getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()); i < getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()) + getCalcMelody().getAllNotes().length; i++){
+            if(i < getCalcMelody().getAllNotes().length){
+                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){
+                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i] + " (" + toRoman(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) + 1) + ")");
+                } else {
+                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i]);
+                }
+            } else {
+                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]) != -1){
+                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length] + " (" + toRoman(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]) + 1) + ")");
+                } else {
+                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]);
+                }
+            }
+        }
+        chordBaseNoteCB = new JComboBox(chordBaseNoteModel);
 
         // GUI structuring
 
@@ -156,6 +182,18 @@ public class GUI{
 
         chordsFramePanel.add(chordsInputPanel, BorderLayout.CENTER);
         chordsFramePanel.add(saveChordsB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+
+        oneChordInput.add(oneChordPanel);
+        oneChordInput.pack();
+        oneChordInput.setResizable(false);
+        oneChordInput.setLocationRelativeTo(chordsInput);
+        oneChordInput.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        oneChordInput.setVisible(false);
+
+        oneChordPanel.add(oneChordContentPanel, BorderLayout.CENTER);
+        oneChordPanel.add(saveOneChordB, BorderLayout.SOUTH);
+
+        oneChordContentPanel.add(chordBaseNoteCB);
 
         rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
         chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
@@ -288,6 +326,7 @@ public class GUI{
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
                         setCurrentChordIndex(i-1);
+                        oneChordInput.setVisible(true);
                         break;
                     }
                 }
@@ -382,6 +421,20 @@ public class GUI{
             }
         });
 
+        keyCB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateCalcMelodyNotes();
+            }
+        });
+
+        majorCB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateCalcMelodyNotes();
+            }
+        });
+
         timeSigCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
@@ -467,6 +520,14 @@ public class GUI{
         this.melody = melody;
     }
 
+    public Melody getCalcMelody() {
+        return this.calcMelody;
+    }
+
+    public void setCalcMelody(Melody calcMelody) {
+        this.calcMelody = calcMelody;
+    }
+
     public MusicPlayer getMusicPlayer(){
         return this.musicPlayer;
     }
@@ -507,11 +568,11 @@ public class GUI{
         this.bufferRhythm = bufferRhythm;
     }
 
-    public String[][] getChords() {
+    public Chord[] getChords() {
         return this.chords;
     }
 
-    public void setChords(String[][] chords) {
+    public void setChords(Chord[] chords) {
         this.chords = chords;
     }
 
@@ -552,9 +613,10 @@ public class GUI{
         } else if(smallestSubdivCB.getSelectedItem() == thirtysecond){
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
+        setCalcMelody(new Melody(getLength()));
         setRhythm(new boolean[getLength()]);
         setBufferRhythm(new boolean[getLength()]);
-        setChords(new String[getLength()][]);
+        setChords(new Chord[getLength()]);
         rhythmInputPanel.setLength(getLength());
         rhythmInputPanel.setRhythm(getRhythm());
         rhythmInputPanel.repaint();
@@ -562,15 +624,27 @@ public class GUI{
         chordsInputPanel.repaint();
     }
 
-    private void addChordElement(String note, int beat){
-        if(getChords()[beat] == null){
-            getChords()[beat] = new String[]{note};
+    private void updateCalcMelodyNotes(){
+        if(majorCB.getSelectedIndex() == 0){
+            calcMelody.createKeyNotes((String)keyCB.getSelectedItem(), true);
         } else {
-
+            calcMelody.createKeyNotes((String)keyCB.getSelectedItem(), false);
         }
     }
 
-    private void removeChordElement(String note, int beat){
-
+    private static String toRoman(int number) {
+        return String.valueOf(new char[number]).replace('\0', 'I')
+                .replace("IIIII", "V")
+                .replace("IIII", "IV")
+                .replace("VV", "X")
+                .replace("VIV", "IX")
+                .replace("XXXXX", "L")
+                .replace("XXXX", "XL")
+                .replace("LL", "C")
+                .replace("LXL", "XC")
+                .replace("CCCCC", "D")
+                .replace("CCCC", "CD")
+                .replace("DD", "M")
+                .replace("DCD", "CM");
     }
 }
