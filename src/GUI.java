@@ -17,7 +17,8 @@ public class GUI{
     private MutableComboBoxModel subdivModel, chordBaseNoteModel;
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL, baseNoteL, keyNotesL, extraNotesL;
-    private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
+    private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, keyNoteCheckBox8, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
+    private JCheckBox[] keyNotesCheckBoxesArray, extraNotesCheckBoxesArray;
     private boolean rhythmEntered, chordsEntered;
     private boolean[] rhythm, bufferRhythm;
     private Chord[] chords;
@@ -68,7 +69,7 @@ public class GUI{
         oneChordContentPanel = new JPanel();
         oneChordContentPanel.setLayout(new GridLayout(2,3));
         keyNotesCheckBoxPanel = new JPanel();
-        keyNotesCheckBoxPanel.setLayout(new GridLayout(6,1));
+        keyNotesCheckBoxPanel.setLayout(new GridLayout(7,1));
         extraNotesCheckBoxPanel = new JPanel();
         extraNotesCheckBoxPanel.setLayout(new GridLayout(5,1));
         fillPanel = new JPanel();
@@ -121,11 +122,27 @@ public class GUI{
         keyNoteCheckBox5 = new JCheckBox("5");
         keyNoteCheckBox6 = new JCheckBox("6");
         keyNoteCheckBox7 = new JCheckBox("7");
+        keyNoteCheckBox8 = new JCheckBox("8");
+        keyNoteCheckBox8.setVisible(false);
         extraNoteCheckBox1 = new JCheckBox("1");
         extraNoteCheckBox2 = new JCheckBox("2");
         extraNoteCheckBox3 = new JCheckBox("3");
         extraNoteCheckBox4 = new JCheckBox("4");
         extraNoteCheckBox5 = new JCheckBox("5");
+        keyNotesCheckBoxesArray = new JCheckBox[7];
+        keyNotesCheckBoxesArray[0] = keyNoteCheckBox2;
+        keyNotesCheckBoxesArray[1] = keyNoteCheckBox3;
+        keyNotesCheckBoxesArray[2] = keyNoteCheckBox4;
+        keyNotesCheckBoxesArray[3] = keyNoteCheckBox5;
+        keyNotesCheckBoxesArray[4] = keyNoteCheckBox6;
+        keyNotesCheckBoxesArray[5] = keyNoteCheckBox7;
+        keyNotesCheckBoxesArray[6] = keyNoteCheckBox8;
+        extraNotesCheckBoxesArray = new JCheckBox[5];
+        extraNotesCheckBoxesArray[0] = extraNoteCheckBox1;
+        extraNotesCheckBoxesArray[1] = extraNoteCheckBox2;
+        extraNotesCheckBoxesArray[2] = extraNoteCheckBox3;
+        extraNotesCheckBoxesArray[3] = extraNoteCheckBox4;
+        extraNotesCheckBoxesArray[4] = extraNoteCheckBox5;
         setRhythmEntered(false);
         setChordsEntered(false);
 
@@ -212,6 +229,7 @@ public class GUI{
         keyNotesCheckBoxPanel.add(keyNoteCheckBox5);
         keyNotesCheckBoxPanel.add(keyNoteCheckBox6);
         keyNotesCheckBoxPanel.add(keyNoteCheckBox7);
+        keyNotesCheckBoxPanel.add(keyNoteCheckBox8);
 
         extraNotesCheckBoxPanel.add(extraNoteCheckBox1);
         extraNotesCheckBoxPanel.add(extraNoteCheckBox2);
@@ -692,6 +710,38 @@ public class GUI{
     private void updateCheckBoxes(){
         // TODO: make it work for "extra note" base notes -> need one more CheckBox for keyNotesCheckBoxes & one less CheckBox for extraNoteCheckBoxes
 
+        // TODO: make this work in general
+
+        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote = keyNote  // TODO: change naming system -> remove brackets ("(I/II/III...)") and color background of selection field in combobox insetead
+            keyNoteCheckBox8.setVisible(false);
+            extraNoteCheckBox5.setVisible(true);
+            int keyIndex = 0;
+            int extraIndex = 0;
+            for(int i = getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem())+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after baseNote
+                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
+                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
+                    keyIndex++;
+                    System.out.println("keyNote: " + i);
+                } else { // current note = extraNote
+                    extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
+                    extraIndex++;
+                    System.out.println("extraNote: " + i);
+                }
+            }
+            for(int i = 0; i <= getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem()); i++){ // finish iteration through allNotes
+                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
+                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
+                    keyIndex++;
+                } else { // current note = extraNote
+                    extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
+                    extraIndex++;
+                }
+            }
+        } else { // baseNote = extraNote
+            keyNoteCheckBox8.setVisible(true);
+            extraNoteCheckBox5.setVisible(false);
+        }
+        /*
         // 2/9
         if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+1 < getCalcMelody().getKeyNotes().length){
             keyNoteCheckBox2.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+1] + " (2/9)");
@@ -728,6 +778,7 @@ public class GUI{
         } else {
             keyNoteCheckBox7.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+6-getCalcMelody().getKeyNotes().length] + " (7)");
         }
+        */
     }
 
     private static String toRoman(int number) {
