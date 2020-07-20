@@ -22,6 +22,7 @@ public class Melody {
         setviPercentage(getvPercentage() + 0.1);
     }
 
+
     // Getters & Setters
 
     public boolean[] getRhythm(){
@@ -179,6 +180,7 @@ public class Melody {
     public void setChangeIndexFound(boolean changeIndexFound){
         this.changeIndexFound = changeIndexFound;
     }
+
 
     // Actual Methods
 

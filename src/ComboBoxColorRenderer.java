@@ -27,6 +27,7 @@ class ComboBoxColorRenderer extends DefaultListCellRenderer{
         return c;
     }
 
+
     // Getters & Setters
 
     public Melody getCalcMelody(){

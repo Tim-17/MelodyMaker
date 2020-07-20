@@ -10,6 +10,7 @@ public class Chord {
         setExtraChordNotes(new String[5]);
     }
 
+
     // Getters & Setters
 
     public String getBaseNote(){
@@ -35,6 +36,7 @@ public class Chord {
     public void setExtraChordNotes(String[] extraChordNotes) {
         this.extraChordNotes = extraChordNotes;
     }
+
 
     // Other methods
 

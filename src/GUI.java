@@ -28,7 +28,9 @@ public class GUI{
     
     public GUI(){
 
+
         // Initialising
+
         try{
             whole = new ImageIcon(ImageIO.read(new File("res/edits/whole_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
             half = new ImageIcon(ImageIO.read(new File("res/edits/half_transparent.png")).getScaledInstance(16, 32, Image.SCALE_SMOOTH));
@@ -161,6 +163,7 @@ public class GUI{
         updateChordBaseNoteModel();
         updateCheckBoxes();
 
+
         // GUI structuring
 
         frame.add(frameBorderPanel);
@@ -259,6 +262,7 @@ public class GUI{
         melodyDisplay.add(playMelodyB, BorderLayout.SOUTH);
 
         frame.setVisible(true);
+
 
         // ActionListeners
 
@@ -473,26 +477,72 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 updateCheckBoxes();
+                getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem()); // TODO: fix problem of keyNotesCheckBox.getText() being: [note] + " (" + [place in chord] + ")"
             }
         });
 
-        // TODO: finish this -> if(baseNote == extraNote){getBufferOneChord().getKeyChordNotes()[6] = keyNotesCheckBoxesArray[6].getText();} else {getBufferOneChord().getKeyChordNotes()[0] = keyNotesCheckBoxesArray[6].getText();} ==> order of the notes in the chord class should depend on baseNote ()
+        // TODO: fix problem of keyNotesCheckBox.getText() being: [note] + " (" + [place in chord] + ")"
 
+        // keyNotesCheckBoxes ActionListener
         for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
-            int finalI = i; // i muss "effectively final" sein -> warum auch immer
-            if(i < 6){
-                keyNotesCheckBoxesArray[i].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                            getBufferOneChord().getKeyChordNotes()[finalI+1] = keyNotesCheckBoxesArray[finalI].getText();
+            int finalI = i; // i muss "effectively final" sein (warum auch immer)
+            keyNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
+                        if(finalI != 6){ // put the baseNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) to the first index of the keyChordNoteArray
+                            if(keyNotesCheckBoxesArray[finalI].isSelected()){
+                                getBufferOneChord().getKeyChordNotes()[finalI+1] = keyNotesCheckBoxesArray[finalI].getText();
+                            } else {
+                                getBufferOneChord().getKeyChordNotes()[finalI+1] = null;
+                            }
                         } else {
-                            getBufferOneChord().getKeyChordNotes()[finalI+1] = null;
+                            if(keyNotesCheckBoxesArray[finalI].isSelected()){
+                                getBufferOneChord().getKeyChordNotes()[0] = keyNotesCheckBoxesArray[finalI].getText();
+                            } else {
+                                getBufferOneChord().getKeyChordNotes()[0] = null;
+                            }
                         }
-
+                    } else { // baseNote == extraNote -> copy keyNotesArray the way it is
+                        if(keyNotesCheckBoxesArray[finalI].isSelected()){
+                            getBufferOneChord().getKeyChordNotes()[finalI] = keyNotesCheckBoxesArray[finalI].getText();
+                        } else {
+                            getBufferOneChord().getKeyChordNotes()[finalI] = null;
+                        }
                     }
-                });
-            }
+                }
+            });
+        }
+
+        // extraNotesCheckBoxes ActionListener
+        for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
+            int finalI = i; // i muss "effectively final" sein (warum auch immer)
+            extraNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote -> copy extraNotesArray the way it is
+                        if(extraNotesCheckBoxesArray[finalI].isSelected()){
+                            getBufferOneChord().getExtraChordNotes()[finalI] = extraNotesCheckBoxesArray[finalI].getText();
+                        } else {
+                            getBufferOneChord().getExtraChordNotes()[finalI] = null;
+                        }
+                    } else { // baseNote == extraNote
+                        if(finalI != 4){ // put the baseNote (which is at the last index (of 4) in the extraNotesCheckBoxesArray) to the first index of the extraChordNotesArray
+                            if(extraNotesCheckBoxesArray[finalI].isSelected()){
+                                getBufferOneChord().getExtraChordNotes()[finalI+1] = extraNotesCheckBoxesArray[finalI].getText();
+                            } else {
+                                getBufferOneChord().getExtraChordNotes()[finalI+1] = null;
+                            }
+                        } else {
+                            if(extraNotesCheckBoxesArray[finalI].isSelected()){
+                                getBufferOneChord().getExtraChordNotes()[0] = extraNotesCheckBoxesArray[finalI].getText();
+                            } else {
+                                getBufferOneChord().getExtraChordNotes()[0] = null;
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         saveChordsB.addActionListener(new ActionListener(){
@@ -654,6 +704,7 @@ public class GUI{
         });
     }
 
+
     // Getters & Setters
 
     private Melody getMelody() {
@@ -766,6 +817,7 @@ public class GUI{
         this.chordEndingIndex = chordEndingIndex;
     }
 
+
     // Other methods
 
     private void updateLength(){
@@ -820,13 +872,13 @@ public class GUI{
     }
 
     private void updateCheckBoxes(){
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote = keyNote
+        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
             int keyIndex = 0;
             int extraIndex = 0;
             updateCheckBoxNotes();
-        } else { // baseNote = extraNote
+        } else { // baseNote == extraNote
             keyNoteCheckBox8.setVisible(true);
             extraNoteCheckBox5.setVisible(false);
             updateCheckBoxNotes();
