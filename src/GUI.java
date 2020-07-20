@@ -268,9 +268,9 @@ public class GUI{
             }
         });
 
-        rhythmInput.addComponentListener(new ComponentAdapter() {
+        rhythmInput.addComponentListener(new ComponentAdapter(){
             @Override
-            public void componentShown(ComponentEvent e) {
+            public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 // setBufferRhythm(getRhythm());
                 setBufferRhythm(new boolean[getLength()]); // TODO: use this approach for every setter
@@ -280,7 +280,7 @@ public class GUI{
             }
 
             @Override
-            public void componentHidden(ComponentEvent e) {
+            public void componentHidden(ComponentEvent e){
                 super.componentHidden(e);
                 rhythmInputPanel.setRhythm(getRhythm());
             }
@@ -324,7 +324,7 @@ public class GUI{
 
         saveRhythmB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
                 setRhythm(getBufferRhythm());
                 rhythmInput.setVisible(false);
                 setRhythmEntered(false);
@@ -363,9 +363,9 @@ public class GUI{
             }
         });
 
-        chordsInputPanel.addMouseListener(new MouseListener() {
+        chordsInputPanel.addMouseListener(new MouseListener(){
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e){
                 int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
                 int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
                 for(int i = 1; i <= getLength(); i++){
@@ -378,36 +378,36 @@ public class GUI{
             }
 
             @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+            public void mousePressed(MouseEvent mouseEvent){
 
             }
 
             @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
+            public void mouseReleased(MouseEvent mouseEvent){
 
             }
 
             @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
+            public void mouseEntered(MouseEvent mouseEvent){
 
             }
 
             @Override
-            public void mouseExited(MouseEvent mouseEvent) {
+            public void mouseExited(MouseEvent mouseEvent){
 
             }
         });
 
-        chordBaseNoteCB.addActionListener(new ActionListener() {
+        chordBaseNoteCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent actionEvent){
                 updateCheckBoxes();
             }
         });
 
-        saveChordsB.addActionListener(new ActionListener() {
+        saveChordsB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent actionEvent){
 
             }
         });
@@ -473,17 +473,17 @@ public class GUI{
             }
         });
 
-        keyCB.addActionListener(new ActionListener() {
+        keyCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent actionEvent){
                 updateCalcMelodyNotes();
                 updateChordBaseNoteModel();
             }
         });
 
-        majorCB.addActionListener(new ActionListener() {
+        majorCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void actionPerformed(ActionEvent actionEvent){
                 updateCalcMelodyNotes();
                 updateChordBaseNoteModel();
             }
