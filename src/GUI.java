@@ -20,10 +20,11 @@ public class GUI{
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL, baseNoteL, keyNotesL, extraNotesL;
     private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, keyNoteCheckBox8, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
     private JCheckBox[] keyNotesCheckBoxesArray, extraNotesCheckBoxesArray;
-    private boolean rhythmEntered, chordsEntered;
+    private boolean rhythmEntered, chordsEntered, editChord;
     private boolean[] rhythm, bufferRhythm;
     private Chord[] chords;
-    private int length, currentChordIndex;
+    private Chord bufferOneChord;
+    private int length, chordBeginningIndex, chordEndingIndex;
     
     public GUI(){
 
@@ -366,48 +367,119 @@ public class GUI{
         chordsInputPanel.addMouseListener(new MouseListener(){
             @Override
             public void mouseClicked(MouseEvent e){
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e){
+                if(e.getButton() == MouseEvent.BUTTON1){
+                    setEditChord(false);
+                } else if(e.getButton() == MouseEvent.BUTTON3){
+                    setEditChord(true);
+                }
+                setChordBeginningIndex(-1);
+                setChordEndingIndex(-1);
                 int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
                 int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
-                        setCurrentChordIndex(i-1);
-                        oneChordInput.setVisible(true);
+                        setChordBeginningIndex(i-1);
                         break;
                     }
                 }
             }
 
+            // ^
+            // |
+            // add function to edit the selected area when dragged over with left mouse button
+            // |
+            // v
+
             @Override
-            public void mousePressed(MouseEvent mouseEvent){
+            public void mouseReleased(MouseEvent e){
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
+                for(int i = 1; i <= getLength(); i++){
+                    if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
+                        if((i-1) < getChordBeginningIndex()){
+                            setChordEndingIndex(getChordBeginningIndex());
+                            setChordBeginningIndex(i-1);
+                        } else {
+                            setChordEndingIndex(i-1);
+                        }
+                        break;
+                    }
+                }
+                if(getChordBeginningIndex() != -1 && getChordEndingIndex() != -1){ // only try to make new chord / edit chord if user selected proper interval of beats
+                    boolean openWindow = true;
+                    if(getEditChord()){
+                        if(getChordBeginningIndex() != getChordEndingIndex()){
+                            for(int i = getChordBeginningIndex(); i < getChordEndingIndex(); i++){ // check if there are different chords (also [some chord] && null) in the interval in which the user would like to edit chords
+                                                                                                                                            // TODO: make it possible to easily extend a chord's duration by right click-dragging it (only save this change when saveOneChordB is activated) -> different chords should only matter if it's not [some chord] && null
+                                if(getChords()[i] != getChords()[i+1]){
+                                    openWindow = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if(openWindow){
+                            if(getChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord
+                                setEditChord(false);
+                            }
+                        }
+                    }
+                    if(openWindow){
+                        oneChordInput.setVisible(true);
+                    }
+                }
+                System.out.println("editChord: " + getEditChord());
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e){
 
             }
 
             @Override
-            public void mouseReleased(MouseEvent mouseEvent){
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent){
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent){
+            public void mouseExited(MouseEvent e){
 
             }
         });
 
+        // |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+        // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+        oneChordInput.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                super.componentShown(e);
+                if(getEditChord()){
+                    setBufferOneChord(getChords()[getChordBeginningIndex()]);
+                } else {
+                    setBufferOneChord(new Chord());
+                    getBufferOneChord().getKeyChordNotes()[0] = (String)chordBaseNoteCB.getSelectedItem();
+                }
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                super.componentHidden(e);
+            }
+        });
+
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        // |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
         chordBaseNoteCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent){
+            public void actionPerformed(ActionEvent e){
                 updateCheckBoxes();
             }
         });
 
         saveChordsB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent){
+            public void actionPerformed(ActionEvent e){
 
             }
         });
@@ -475,7 +547,7 @@ public class GUI{
 
         keyCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent){
+            public void actionPerformed(ActionEvent e){
                 updateCalcMelodyNotes();
                 updateChordBaseNoteModel();
             }
@@ -483,7 +555,7 @@ public class GUI{
 
         majorCB.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent actionEvent){
+            public void actionPerformed(ActionEvent e){
                 updateCalcMelodyNotes();
                 updateChordBaseNoteModel();
             }
@@ -607,6 +679,14 @@ public class GUI{
         this.chordsEntered = chordsEntered;
     }
 
+    public boolean getEditChord(){
+        return this.editChord;
+    }
+
+    public void setEditChord(boolean editChord) {
+        this.editChord = editChord;
+    }
+
     public boolean[] getRhythm() {
         return this.rhythm;
     }
@@ -631,6 +711,14 @@ public class GUI{
         this.chords = chords;
     }
 
+    public Chord getBufferOneChord(){
+        return this.bufferOneChord;
+    }
+
+    public void setBufferOneChord(Chord bufferOneChord){
+        this.bufferOneChord = bufferOneChord;
+    }
+
     private int getLength() {
         return this.length;
     }
@@ -644,12 +732,20 @@ public class GUI{
         }
     }
 
-    public int getCurrentChordIndex() {
-        return this.currentChordIndex;
+    public int getChordBeginningIndex(){
+        return this.chordBeginningIndex;
     }
 
-    public void setCurrentChordIndex(int currentChordIndex) {
-        this.currentChordIndex = currentChordIndex;
+    public void setChordBeginningIndex(int chordBeginningIndex){
+        this.chordBeginningIndex = chordBeginningIndex;
+    }
+
+    public int getChordEndingIndex(){
+        return this.chordEndingIndex;
+    }
+
+    public void setChordEndingIndex(int chordEndingIndex){
+        this.chordEndingIndex = chordEndingIndex;
     }
 
     // Other methods
