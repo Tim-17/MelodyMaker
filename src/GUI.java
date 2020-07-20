@@ -154,6 +154,7 @@ public class GUI{
 
         chordBaseNoteModel = new DefaultComboBoxModel();
         chordBaseNoteCB = new JComboBox(chordBaseNoteModel);
+        chordBaseNoteCB.setRenderer(new ComboBoxColorRenderer(chordBaseNoteCB.getRenderer(), getCalcMelody()));
         chordBaseNoteCB.setMaximumRowCount(12);
         updateChordBaseNoteModel();
 
@@ -692,17 +693,9 @@ public class GUI{
         // Add new elements
         for(int i = getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()); i < getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()) + getCalcMelody().getAllNotes().length; i++){
             if(i < getCalcMelody().getAllNotes().length){
-                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){
-                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i] + " (" + toRoman(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) + 1) + ")");
-                } else {
-                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i]);
-                }
+                chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i]);
             } else {
-                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]) != -1){
-                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length] + " (" + toRoman(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]) + 1) + ")");
-                } else {
-                    chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]);
-                }
+                chordBaseNoteModel.addElement(getCalcMelody().getAllNotes()[i-getCalcMelody().getAllNotes().length]);
             }
         }
     }
@@ -710,9 +703,7 @@ public class GUI{
     private void updateCheckBoxes(){
         // TODO: make it work for "extra note" base notes -> need one more CheckBox for keyNotesCheckBoxes & one less CheckBox for extraNoteCheckBoxes
 
-        // TODO: make this work in general
-
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote = keyNote  // TODO: change naming system -> remove brackets ("(I/II/III...)") and color background of selection field in combobox insetead
+        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote = keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
             int keyIndex = 0;
@@ -741,44 +732,6 @@ public class GUI{
             keyNoteCheckBox8.setVisible(true);
             extraNoteCheckBox5.setVisible(false);
         }
-        /*
-        // 2/9
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+1 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox2.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+1] + " (2/9)");
-        } else {
-            keyNoteCheckBox2.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+1-getCalcMelody().getKeyNotes().length] + " (2/9)");
-        }
-        // 3/10
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+2 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox3.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+2] + " (3/10)");
-        } else {
-            keyNoteCheckBox3.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+2-getCalcMelody().getKeyNotes().length] + " (3/10)");
-        }
-        // 4/11
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+3 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox4.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+3] + " (4/11)");
-        } else {
-            keyNoteCheckBox4.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+3-getCalcMelody().getKeyNotes().length] + " (4/11)");
-        }
-        // 5
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+4 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox5.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+4] + " (5)");
-        } else {
-            keyNoteCheckBox5.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+4-getCalcMelody().getKeyNotes().length] + " (5)");
-        }
-        // 6/13
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+5 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox6.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+5] + " (6/13)");
-        } else {
-            keyNoteCheckBox6.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+5-getCalcMelody().getKeyNotes().length] + " (6/13)");
-        }
-        // 7
-        if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+6 < getCalcMelody().getKeyNotes().length){
-            keyNoteCheckBox7.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+6] + " (7)");
-        } else {
-            keyNoteCheckBox7.setText(getCalcMelody().getKeyNotes()[getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem())+6-getCalcMelody().getKeyNotes().length] + " (7)");
-        }
-        */
     }
 
     private static String toRoman(int number) {
