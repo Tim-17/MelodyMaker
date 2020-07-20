@@ -15,6 +15,7 @@ public class GUI{
     private ChordsPanel chordsInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordBaseNoteCB;
     private MutableComboBoxModel subdivModel, chordBaseNoteModel;
+    private ComboBoxColorRenderer comboBoxColorRenderer;
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChords, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL, baseNoteL, keyNotesL, extraNotesL;
     private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, keyNoteCheckBox8, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
@@ -115,7 +116,7 @@ public class GUI{
         smallestSubdivL = new JLabel("Smallest Subdivision: ");
         baseNoteL = new JLabel("Base note");
         keyNotesL = new JLabel("Key notes");
-        extraNotesL = new JLabel("Extra Notes");
+        extraNotesL = new JLabel("Extra notes");
         keyNoteCheckBox2 = new JCheckBox("2");
         keyNoteCheckBox3 = new JCheckBox("3");
         keyNoteCheckBox4 = new JCheckBox("4");
@@ -148,15 +149,16 @@ public class GUI{
 
         setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 16);
         setCalcMelody(new Melody(getLength()));
-        updateCalcMelodyNotes();
         setRhythm(new boolean[getLength()]);
         setChords(new Chord[getLength()]);
 
         chordBaseNoteModel = new DefaultComboBoxModel();
         chordBaseNoteCB = new JComboBox(chordBaseNoteModel);
-        chordBaseNoteCB.setRenderer(new ComboBoxColorRenderer(chordBaseNoteCB.getRenderer(), getCalcMelody()));
+        comboBoxColorRenderer = new ComboBoxColorRenderer(chordBaseNoteCB.getRenderer(), getCalcMelody());
+        chordBaseNoteCB.setRenderer(comboBoxColorRenderer);
         chordBaseNoteCB.setMaximumRowCount(12);
         updateChordBaseNoteModel();
+        updateCheckBoxes();
 
         // GUI structuring
 
@@ -578,6 +580,7 @@ public class GUI{
 
     public void setCalcMelody(Melody calcMelody) {
         this.calcMelody = calcMelody;
+        updateCalcMelodyNotes();
     }
 
     public MusicPlayer getMusicPlayer(){
@@ -666,6 +669,7 @@ public class GUI{
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
         setCalcMelody(new Melody(getLength()));
+        comboBoxColorRenderer.setCalcMelody(getCalcMelody());
         setRhythm(new boolean[getLength()]);
         setBufferRhythm(new boolean[getLength()]);
         setChords(new Chord[getLength()]);
@@ -674,6 +678,7 @@ public class GUI{
         rhythmInputPanel.repaint();
         chordsInputPanel.setLength(getLength());
         chordsInputPanel.repaint();
+        oneChordInput.setVisible(false);
     }
 
     private void updateCalcMelodyNotes(){
@@ -701,52 +706,43 @@ public class GUI{
     }
 
     private void updateCheckBoxes(){
-        // TODO: make it work for "extra note" base notes -> need one more CheckBox for keyNotesCheckBoxes & one less CheckBox for extraNoteCheckBoxes
-
         if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote = keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
             int keyIndex = 0;
             int extraIndex = 0;
-            for(int i = getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem())+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after baseNote
-                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
-                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
-                    keyIndex++;
-                    System.out.println("keyNote: " + i);
-                } else { // current note = extraNote
-                    extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
-                    extraIndex++;
-                    System.out.println("extraNote: " + i);
-                }
-            }
-            for(int i = 0; i <= getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem()); i++){ // finish iteration through allNotes
-                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
-                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
-                    keyIndex++;
-                } else { // current note = extraNote
-                    extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
-                    extraIndex++;
-                }
-            }
+            updateCheckBoxNotes();
         } else { // baseNote = extraNote
             keyNoteCheckBox8.setVisible(true);
             extraNoteCheckBox5.setVisible(false);
+            updateCheckBoxNotes();
         }
     }
 
-    private static String toRoman(int number) {
-        return String.valueOf(new char[number]).replace('\0', 'I')
-                .replace("IIIII", "V")
-                .replace("IIII", "IV")
-                .replace("VV", "X")
-                .replace("VIV", "IX")
-                .replace("XXXXX", "L")
-                .replace("XXXX", "XL")
-                .replace("LL", "C")
-                .replace("LXL", "XC")
-                .replace("CCCCC", "D")
-                .replace("CCCC", "CD")
-                .replace("DD", "M")
-                .replace("DCD", "CM");
+    private void updateCheckBoxNotes(){
+        int keyIndex = 0;
+        int extraIndex = 0;
+        for(int i = getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem())+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after baseNote
+            if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
+                keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
+                keyIndex++;
+            } else { // current note = extraNote
+                extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
+                extraIndex++;
+            }
+        }
+        for(int i = 0; i <= getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem()); i++){ // finish iteration through allNotes
+            if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
+                if(keyIndex != 6){
+                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
+                } else {
+                    keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + ")");
+                }
+                keyIndex++;
+            } else { // current note = extraNote
+                extraNotesCheckBoxesArray[extraIndex].setText(getCalcMelody().getAllNotes()[i]);
+                extraIndex++;
+            }
+        }
     }
 }
