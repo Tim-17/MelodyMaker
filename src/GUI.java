@@ -456,8 +456,7 @@ public class GUI{
                 if(getEditChord()){
                     setBufferOneChord(getChords()[getChordBeginningIndex()]);
                 } else {
-                    setBufferOneChord(new Chord());
-                    getBufferOneChord().getKeyChordNotes()[0] = (String)chordBaseNoteCB.getSelectedItem();
+                    setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem()));
                 }
             }
 
@@ -476,6 +475,25 @@ public class GUI{
                 updateCheckBoxes();
             }
         });
+
+        // TODO: finish this -> if(baseNote == extraNote){getBufferOneChord().getKeyChordNotes()[6] = keyNotesCheckBoxesArray[6].getText();} else {getBufferOneChord().getKeyChordNotes()[0] = keyNotesCheckBoxesArray[6].getText();} ==> order of the notes in the chord class should depend on baseNote ()
+
+        for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
+            int finalI = i; // i muss "effectively final" sein -> warum auch immer
+            if(i < 6){
+                keyNotesCheckBoxesArray[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if(keyNotesCheckBoxesArray[finalI].isSelected()){
+                            getBufferOneChord().getKeyChordNotes()[finalI+1] = keyNotesCheckBoxesArray[finalI].getText();
+                        } else {
+                            getBufferOneChord().getKeyChordNotes()[finalI+1] = null;
+                        }
+
+                    }
+                });
+            }
+        }
 
         saveChordsB.addActionListener(new ActionListener(){
             @Override

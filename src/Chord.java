@@ -1,14 +1,24 @@
 public class Chord {
 
+    private String baseNote;
     private String[] keyChordNotes;
     private String[] extraChordNotes;
 
-    public Chord(){
+    public Chord(String baseNote){
+        setBaseNote(baseNote);
         setKeyChordNotes(new String[7]);
         setExtraChordNotes(new String[5]);
     }
 
     // Getters & Setters
+
+    public String getBaseNote(){
+        return this.baseNote;
+    }
+
+    public void setBaseNote(String baseNote){
+        this.baseNote = baseNote;
+    }
 
     public String[] getKeyChordNotes() {
         return this.keyChordNotes;
