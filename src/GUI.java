@@ -391,7 +391,7 @@ public class GUI{
 
             // ^
             // |
-            // add function to edit the selected area when dragged over with left mouse button
+            // TODO: add function to edit the selected area when dragged over with right mouse button
             // |
             // v
 
