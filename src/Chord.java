@@ -4,10 +4,10 @@ public class Chord {
     private String[] keyChordNotes;
     private String[] extraChordNotes;
 
-    public Chord(String baseNote){
-        setBaseNote(baseNote);
+    public Chord(String baseNote, boolean key){
         setKeyChordNotes(new String[7]);
         setExtraChordNotes(new String[5]);
+        setBaseNote(baseNote, key);
     }
 
 
@@ -17,8 +17,13 @@ public class Chord {
         return this.baseNote;
     }
 
-    public void setBaseNote(String baseNote){
+    public void setBaseNote(String baseNote, boolean key){
         this.baseNote = baseNote;
+        if(key){ // baseNote == keyNote
+            getKeyChordNotes()[0] = getBaseNote();
+        } else { // baseNote == extraNote
+            getExtraChordNotes()[0] = getBaseNote();
+        }
     }
 
     public String[] getKeyChordNotes() {

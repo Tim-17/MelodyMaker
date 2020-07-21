@@ -450,17 +450,19 @@ public class GUI{
             }
         });
 
-        // |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-        // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
         oneChordInput.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
                 super.componentShown(e);
                 if(getEditChord()){
-                    setBufferOneChord(getChords()[getChordBeginningIndex()]);
+                    setBufferOneChord(getChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                 } else {
-                    setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem()));
+                    // TODO: make it work so that it actually creates a new chord when the oneChordFrame is closed and opened again by left click
+                    if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
+                        setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem(), true));
+                    } else { // baseNote == extraNote
+                        setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem(), false));
+                    }
                 }
             }
 
@@ -470,18 +472,19 @@ public class GUI{
             }
         });
 
-        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        // |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
         chordBaseNoteCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 updateCheckBoxes();
-                getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem()); // TODO: fix problem of keyNotesCheckBox.getText() being: [note] + " (" + [place in chord] + ")"
+                if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
+                    getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), true);
+                } else { // baseNote == extraNote
+                    getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), false);
+                }
+                // kürzere Version: getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1);
+                // TODO: iterate through all ChordNotes and change them so that they fit with the new baseNote
             }
         });
-
-        // TODO: fix problem of keyNotesCheckBox.getText() being: [note] + " (" + [place in chord] + ")"
 
         // keyNotesCheckBoxes ActionListener
         for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
@@ -492,20 +495,14 @@ public class GUI{
                     if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
                         if(finalI != 6){ // put the baseNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) to the first index of the keyChordNoteArray
                             if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                                getBufferOneChord().getKeyChordNotes()[finalI+1] = keyNotesCheckBoxesArray[finalI].getText();
+                                getBufferOneChord().getKeyChordNotes()[finalI+1] = extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
                             } else {
                                 getBufferOneChord().getKeyChordNotes()[finalI+1] = null;
-                            }
-                        } else {
-                            if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                                getBufferOneChord().getKeyChordNotes()[0] = keyNotesCheckBoxesArray[finalI].getText();
-                            } else {
-                                getBufferOneChord().getKeyChordNotes()[0] = null;
                             }
                         }
                     } else { // baseNote == extraNote -> copy keyNotesArray the way it is
                         if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                            getBufferOneChord().getKeyChordNotes()[finalI] = keyNotesCheckBoxesArray[finalI].getText();
+                            getBufferOneChord().getKeyChordNotes()[finalI] = extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
                         } else {
                             getBufferOneChord().getKeyChordNotes()[finalI] = null;
                         }
@@ -533,17 +530,28 @@ public class GUI{
                             } else {
                                 getBufferOneChord().getExtraChordNotes()[finalI+1] = null;
                             }
-                        } else {
-                            if(extraNotesCheckBoxesArray[finalI].isSelected()){
-                                getBufferOneChord().getExtraChordNotes()[0] = extraNotesCheckBoxesArray[finalI].getText();
-                            } else {
-                                getBufferOneChord().getExtraChordNotes()[0] = null;
-                            }
                         }
                     }
                 }
             });
         }
+
+        saveOneChordB.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                System.out.println("Basenote: " + getBufferOneChord().getBaseNote());
+                System.out.println("KeyChordNotes: ");
+                for(int i = 0; i < getBufferOneChord().getKeyChordNotes().length; i++){
+                    System.out.print(getBufferOneChord().getKeyChordNotes()[i] + ", ");
+                }
+                System.out.println("");
+                System.out.println("ExtraChordNotes: ");
+                for(int i = 0; i < getBufferOneChord().getExtraChordNotes().length; i++){
+                    System.out.print(getBufferOneChord().getExtraChordNotes()[i] + ", ");
+                }
+                System.out.println("");
+            }
+        });
 
         saveChordsB.addActionListener(new ActionListener(){
             @Override
@@ -910,5 +918,15 @@ public class GUI{
                 extraIndex++;
             }
         }
+    }
+
+    private String extractActualNoteName(String note){
+        int index = 0;
+        String actualNoteName = "";
+        while(index < note.length() && note.charAt(index) != ' '){ // (index < note.length) is not necessary for the names of the CheckBoxNotes; could be used for chordBaseNoteCB if roman numbers in brackets (C (I); C#; D (II) ...) are added for chord function in key
+            actualNoteName += note.charAt(index);
+            index++;
+        }
+        return actualNoteName;
     }
 }
