@@ -887,7 +887,7 @@ public class GUI{
         }
     }
 
-    private void updateCheckBoxes(){
+    private void updateCheckBoxes(){ // updates which CheckBoxes should be visible depending on the currently selected key & updates the names of the notes of the CheckBoxes
         if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
@@ -899,7 +899,7 @@ public class GUI{
         }
     }
 
-    private void updateCheckBoxNotes(){
+    private void updateCheckBoxNotes(){ // updates the names of the notes of the CheckBoxes
         int keyIndex = 0;
         int extraIndex = 0;
         for(int i = getCalcMelody().findAllNotesIndex((String)chordBaseNoteCB.getSelectedItem())+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after baseNote
@@ -936,7 +936,7 @@ public class GUI{
         return actualNoteName;
     }
 
-    private void invokeCheckBoxActionListeners(){
+    private void invokeCheckBoxActionListeners(){ // updates getBufferChord() information
         // keyNoteCheckBoxes
         for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
             for(ActionListener a: keyNotesCheckBoxesArray[i].getActionListeners()){
@@ -951,7 +951,7 @@ public class GUI{
         }
     }
 
-    private void updateCheckBoxSelectionStatus(Chord chord) {
+    private void updateCheckBoxSelectionStatus(Chord chord){ // updates the CheckBoxes so that their selection status corresponds to the selected notes of the paramter (input) chord
         if(getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
             // keyNoteCheckBoxes
             for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
