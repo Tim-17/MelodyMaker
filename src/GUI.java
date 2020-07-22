@@ -456,13 +456,11 @@ public class GUI{
                 super.componentShown(e);
                 if(getEditChord()){
                     setBufferOneChord(getChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
+                    // TODO: update CheckBox UI to match the chord
                 } else {
-                    // TODO: make it work so that it actually creates a new chord when the oneChordFrame is closed and opened again by left click
-                    if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
-                        setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem(), true));
-                    } else { // baseNote == extraNote
-                        setBufferOneChord(new Chord((String)chordBaseNoteCB.getSelectedItem(), false));
-                    }
+                    setBufferOneChord(new Chord((String)chordBaseNoteCB.getItemAt(0), true));
+                    updateCheckBoxSelectionStatus(getBufferOneChord());
+                    chordBaseNoteCB.setSelectedIndex(0);
                 }
             }
 
@@ -482,7 +480,7 @@ public class GUI{
                     getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), false);
                 }
                 // kürzere Version: getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1);
-                // TODO: iterate through all ChordNotes and change them so that they fit with the new baseNote
+                invokeCheckBoxActionListeners();
             }
         });
 
@@ -550,6 +548,12 @@ public class GUI{
                     System.out.print(getBufferOneChord().getExtraChordNotes()[i] + ", ");
                 }
                 System.out.println("");
+                //updateCheckBoxSelectionStatus(new Chord((String)chordBaseNoteCB.getItemAt(0), true));
+                /*
+                setBufferOneChord(new Chord((String)chordBaseNoteCB.getItemAt(0), true));
+                chordBaseNoteCB.setSelectedIndex(0);
+                updateCheckBoxSelectionStatus(getBufferOneChord());
+                */
             }
         });
 
@@ -620,6 +624,8 @@ public class GUI{
                 }
             }
         });
+
+        // TODO: update getChords() when key is changed -> transpose
 
         keyCB.addActionListener(new ActionListener(){
             @Override
@@ -828,6 +834,8 @@ public class GUI{
 
     // Other methods
 
+    // TODO: make new getChords() when length is changed (except when only numberOfMeasures is changed -> then copy the respective measures)
+
     private void updateLength(){
         if(smallestSubdivCB.getSelectedItem() == whole){
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 1);
@@ -883,8 +891,6 @@ public class GUI{
         if(getCalcMelody().findKeyNoteIndex((String)chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
-            int keyIndex = 0;
-            int extraIndex = 0;
             updateCheckBoxNotes();
         } else { // baseNote == extraNote
             keyNoteCheckBox8.setVisible(true);
@@ -928,5 +934,46 @@ public class GUI{
             index++;
         }
         return actualNoteName;
+    }
+
+    private void invokeCheckBoxActionListeners(){
+        // keyNoteCheckBoxes
+        for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
+            for(ActionListener a: keyNotesCheckBoxesArray[i].getActionListeners()){
+                a.actionPerformed(new ActionEvent(keyNotesCheckBoxesArray[i], ActionEvent.ACTION_PERFORMED, null));
+            }
+        }
+        // extraNoteCheckBoxes
+        for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
+            for(ActionListener a: extraNotesCheckBoxesArray[i].getActionListeners()){
+                a.actionPerformed(new ActionEvent(extraNotesCheckBoxesArray[i], ActionEvent.ACTION_PERFORMED, null));
+            }
+        }
+    }
+
+    private void updateCheckBoxSelectionStatus(Chord chord) {
+        if(getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
+            // keyNoteCheckBoxes
+            for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
+                if(i != 6){
+                    keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i+1] != null);
+                }
+            }
+            // extraNoteCheckBoxes
+            for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
+                extraNotesCheckBoxesArray[i].setSelected(chord.getExtraChordNotes()[i] != null);
+            }
+        } else { // baseNote == extraNote
+            // keyNoteCheckBoxes
+            for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
+                keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i] != null);
+            }
+            // extraNoteCheckBoxes
+            for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
+                if(i != 4){
+                    extraNotesCheckBoxesArray[i].setSelected(chord.getExtraChordNotes()[i+1] != null);
+                }
+            }
+        }
     }
 }
