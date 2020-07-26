@@ -33,8 +33,6 @@ public class ChordsPanel extends JPanel{
             } else {
                 g.setColor(new Color(0,0,0,0));
                 g.fillRoundRect(xPos+1, Main.OTHER_FRAME_HEIGHT/3+1, rect-1, Main.OTHER_FRAME_HEIGHT/3-1, 10, 10);
-                // g.setColor(Color.BLACK);
-                // g.drawRoundRect(xPos, Main.OTHER_FRAME_HEIGHT/3, rect, Main.OTHER_FRAME_HEIGHT/3, 10, 10);
             }
         }
     }
