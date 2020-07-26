@@ -105,7 +105,7 @@ public class GUI{
         saveRhythmB = new JButton("Save rhythm");
         deleteRhythm = new JButton("Delete rhythm");
         deleteRhythm.setVisible(false);
-        enterChordsB = new JButton("Enter chord progression"); // TODO: Add chord only creation function
+        enterChordsB = new JButton("Enter chords"); // TODO: Add chord only creation function
         saveChordsB = new JButton("Save chords");
         saveOneChordB = new JButton("Save chord");
         deleteChords = new JButton("Delete chords");
@@ -383,7 +383,8 @@ public class GUI{
             @Override
             public void componentHidden(ComponentEvent e) {
                 super.componentHidden(e);
-                // chordsInputPanel.setChords(getChords());
+                chordsInputPanel.setChords(getChords());
+                oneChordInput.setVisible(false);
             }
         });
 
@@ -498,7 +499,7 @@ public class GUI{
                 } else { // baseNote == extraNote
                     getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), false);
                 }
-                // kürzere Version: getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1);
+                // kürzere Version: getBufferOneChord().setBaseNote((String)chordBaseNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordBaseNoteCB.getSelectedItem())) != -1);
                 invokeCheckBoxActionListeners();
             }
         });
@@ -556,34 +557,52 @@ public class GUI{
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                /*
-                System.out.println("Basenote: " + getBufferOneChord().getBaseNote());
-                System.out.println("KeyChordNotes: ");
-                for(int i = 0; i < getBufferOneChord().getKeyChordNotes().length; i++){
-                    System.out.print(getBufferOneChord().getKeyChordNotes()[i] + ", ");
+                for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
+                    getBufferChords()[i] = getBufferOneChord();
                 }
-                System.out.println("");
-                System.out.println("ExtraChordNotes: ");
-                for(int i = 0; i < getBufferOneChord().getExtraChordNotes().length; i++){
-                    System.out.print(getBufferOneChord().getExtraChordNotes()[i] + ", ");
-                }
-                System.out.println("");
-                */
-
+                oneChordInput.setVisible(false);
+                chordsInputPanel.setChords(getBufferChords());
+                chordsInputPanel.repaint();
+                // Output
+                System.out.println("BufferChords: ");
+                outputChords(getBufferChords());
+                System.out.println("PanelChords: ");
+                outputChords(chordsInputPanel.getChords());
             }
         });
 
         saveChordsB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                setChords(getBufferChords());
+                chordsInput.setVisible(false);
+                oneChordInput.setVisible(false);
+                setChordsEntered(false);
+                for(Chord chord : getChords()){
+                    if(chord != null){
+                        setChordsEntered(true);
+                        deleteChords.setVisible(true);
+                        enterChordsB.setText("Edit chords");
+                        break;
+                    }
+                }
+                if(!getChordsEntered()){
+                    deleteChords.setVisible(false);
+                    enterChordsB.setText("Enter chords");
+                }
             }
         });
 
         deleteChords.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-
+                setChords(new Chord[getLength()]);
+                setBufferChords(new Chord[getLength()]);
+                chordsInputPanel.setChords(getChords());
+                chordsInputPanel.repaint();
+                setChordsEntered(false);
+                deleteChords.setVisible(false);
+                enterChordsB.setText("Enter chords");
             }
         });
 
@@ -978,9 +997,8 @@ public class GUI{
         }
     }
 
-    // TODO: fix bug that first KeyNoteCheckBox is always selected
     private void updateCheckBoxSelectionStatus(Chord chord){ // updates the CheckBoxes so that their selection status corresponds to the selected notes of the parameter (input) chord
-        if(getCalcMelody().findKeyNoteIndex((String) chordBaseNoteCB.getSelectedItem()) != -1){ // baseNote == keyNote
+        if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordBaseNoteCB.getSelectedItem())) != -1){ // baseNote == keyNote
             // keyNoteCheckBoxes
             for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
                 if(i != 6){
@@ -1019,5 +1037,26 @@ public class GUI{
                 .replace("CCCC", "CD")
                 .replace("DD", "M")
                 .replace("DCD", "CM");
+    }
+
+    private void outputChords(Chord[] chords){
+        for(int i = 0; i < getLength(); i++){
+            System.out.println(i + ": ");
+            if(chords[i] != null){
+                System.out.println("Basenote: " + chords[i].getBaseNote());
+                System.out.println("KeyChordNotes: ");
+                for(int j = 0; j < chords[i].getKeyChordNotes().length; j++){
+                    System.out.print(chords[i].getKeyChordNotes()[j] + ", ");
+                }
+                System.out.println("");
+                System.out.println("ExtraChordNotes: ");
+                for(int j = 0; j < chords[i].getExtraChordNotes().length; j++){
+                    System.out.print(chords[i].getExtraChordNotes()[j] + ", ");
+                }
+            } else {
+                System.out.println("Null");
+            }
+            System.out.println("\n");
+        }
     }
 }

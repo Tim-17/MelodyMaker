@@ -4,9 +4,11 @@ import java.awt.*;
 public class ChordsPanel extends JPanel{
 
     private int length;
+    private Chord[] chords;
 
     public ChordsPanel(){
         setLength(16);
+        setChords(new Chord[getLength()]);
     }
 
     @Override
@@ -22,6 +24,19 @@ public class ChordsPanel extends JPanel{
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), Main.OTHER_FRAME_HEIGHT/3, rect, Main.OTHER_FRAME_HEIGHT/3, 10, 10);
         }
+        int xPos;
+        for(int i = 1; i <= getLength(); i++){
+            xPos = clear*i+rect*(i-1);
+            if(getChords()[i-1] != null){
+                g.setColor(Color.BLACK);
+                g.drawString(getChords()[i-1].getBaseNote(), (xPos+rect/2)-(g.getFontMetrics().stringWidth(getChords()[i-1].getBaseNote())/2), Main.OTHER_FRAME_HEIGHT/2+(g.getFontMetrics().getHeight()/2)); // place the chordBaseNote String at the center of the boxes
+            } else {
+                g.setColor(new Color(0,0,0,0));
+                g.fillRoundRect(xPos+1, Main.OTHER_FRAME_HEIGHT/3+1, rect-1, Main.OTHER_FRAME_HEIGHT/3-1, 10, 10);
+                // g.setColor(Color.BLACK);
+                // g.drawRoundRect(xPos, Main.OTHER_FRAME_HEIGHT/3, rect, Main.OTHER_FRAME_HEIGHT/3, 10, 10);
+            }
+        }
     }
 
     public int getLength(){
@@ -32,4 +47,11 @@ public class ChordsPanel extends JPanel{
         this.length = length;
     }
 
+    public Chord[] getChords(){
+        return this.chords;
+    }
+
+    public void setChords(Chord[] chords){
+        this.chords = chords;
+    }
 }
