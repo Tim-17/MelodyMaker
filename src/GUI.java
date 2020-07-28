@@ -441,7 +441,6 @@ public class GUI{
                             for(int i = getChordBeginningIndex(); i < getChordEndingIndex(); i++){ // check if there are different chords (also [some chord] && null) in the interval in which the user would like to edit chords
                                                                                                                                             // TODO: make it possible to easily extend a chord's duration by right click-dragging it (only save this change when saveOneChordB is activated) -> different chords should only matter if it's not [some chord] && null
                                 if(getBufferChords()[i] != getBufferChords()[i+1]){
-                                    System.out.println("Yeeeeehawww");
                                     openWindow = false;
                                     break;
                                 }
@@ -457,7 +456,6 @@ public class GUI{
                         oneChordInput.setVisible(true);
                     }
                 }
-                System.out.println("editChord: " + getEditChord());
             }
 
             @Override
@@ -476,8 +474,10 @@ public class GUI{
             public void componentShown(ComponentEvent e) {
                 super.componentShown(e);
                 if(getEditChord()){
-                    setBufferOneChord(getChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
-                    // TODO: update CheckBox UI to match the chord
+                    chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
+                    setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
+                    updateCheckBoxes();
+                    updateCheckBoxSelectionStatus(getBufferOneChord());
                 } else {
                     setBufferOneChord(new Chord((String) chordRootNoteCB.getItemAt(0), true));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
@@ -558,6 +558,7 @@ public class GUI{
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
+                // TODO: fix error that all chords are shifted by one when a single chord is changed (F F C C) is supposed to go to this -> (G F C C), but instead it goes to this -> (G G F F)
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
                 }
@@ -1010,10 +1011,8 @@ public class GUI{
     private void updateCheckBoxSelectionStatus(Chord chord){ // updates the CheckBoxes so that their selection status corresponds to the selected notes of the parameter (input) chord
         if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String) chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
             // keyNoteCheckBoxes
-            for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
-                if(i != 6){
-                    keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i+1] != null);
-                }
+            for(int i = 0; i < keyNotesCheckBoxesArray.length-1; i++){ // omit the last CheckBox because it's the root note and not visible anyway
+                keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i+1] != null);
             }
             // extraNoteCheckBoxes
             for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
@@ -1025,10 +1024,8 @@ public class GUI{
                 keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i] != null);
             }
             // extraNoteCheckBoxes
-            for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
-                if(i != 4){
-                    extraNotesCheckBoxesArray[i].setSelected(chord.getExtraChordNotes()[i+1] != null);
-                }
+            for(int i = 0; i < extraNotesCheckBoxesArray.length-1; i++){ // omit the last CheckBox because it's the root note and not visible anyway
+                extraNotesCheckBoxesArray[i].setSelected(chord.getExtraChordNotes()[i+1] != null);
             }
         }
     }
@@ -1050,7 +1047,7 @@ public class GUI{
     }
 
     private void outputChords(Chord[] chords){
-        for(int i = 0; i < getLength(); i++){
+        for(int i = 0; i < chords.length; i++){
             System.out.println(i + ": ");
             if(chords[i] != null){
                 System.out.println("Rootnote: " + chords[i].getRootNote());
@@ -1068,5 +1065,14 @@ public class GUI{
             }
             System.out.println("\n");
         }
+    }
+
+    private int findChordRootNoteCBNoteIndex(String note){
+        for(int i = 0; i < 12; i++){
+            if(chordRootNoteCB.getItemAt(i).equals(note)){
+                return i;
+            }
+        }
+        return -1;
     }
 }
