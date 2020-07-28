@@ -156,7 +156,7 @@ public class GUI{
         setChords(new Chord[getLength()]);
 
         chordRootNoteModel = new DefaultComboBoxModel();
-        updateChordRootNoteModel();
+        addChordRootNoteModelElements();
         chordRootNoteCB = new JComboBox(chordRootNoteModel);
         comboBoxColorRenderer = new ComboBoxColorRenderer(chordRootNoteCB.getRenderer(), getCalcMelody());
         chordRootNoteCB.setRenderer(comboBoxColorRenderer);
@@ -222,7 +222,7 @@ public class GUI{
         oneChordInput.setVisible(false);
 
         oneChordPanel.add(oneChordContentPanel, BorderLayout.CENTER);
-        oneChordPanel.add(saveOneChordB, BorderLayout.SOUTH);
+        oneChordPanel.add(saveOneChordB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         oneChordContentPanel.add(rootNoteL);
         oneChordContentPanel.add(keyNotesL);
@@ -415,7 +415,7 @@ public class GUI{
 
             // ^
             // |
-            // TODO: add function to edit the selected area when dragged over with right mouse button & add functino to delete chords with mouse wheel
+            // TODO: add function to edit the selected area when dragged over with right mouse button & add function to delete chords with mouse wheel
             // |
             // v
 
@@ -440,14 +440,15 @@ public class GUI{
                         if(getChordBeginningIndex() != getChordEndingIndex()){
                             for(int i = getChordBeginningIndex(); i < getChordEndingIndex(); i++){ // check if there are different chords (also [some chord] && null) in the interval in which the user would like to edit chords
                                                                                                                                             // TODO: make it possible to easily extend a chord's duration by right click-dragging it (only save this change when saveOneChordB is activated) -> different chords should only matter if it's not [some chord] && null
-                                if(getChords()[i] != getChords()[i+1]){
+                                if(getBufferChords()[i] != getBufferChords()[i+1]){
+                                    System.out.println("Yeeeeehawww");
                                     openWindow = false;
                                     break;
                                 }
                             }
                         }
                         if(openWindow){
-                            if(getChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord
+                            if(getBufferChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord
                                 setEditChord(false);
                             }
                         }
@@ -504,14 +505,14 @@ public class GUI{
             }
         });
 
-        // keyNotesCheckBoxes ActionListener
+        // keyNotesCheckBoxes ActionListeners
         for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
             int finalI = i; // i muss "effectively final" sein (warum auch immer)
             keyNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
                     if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String) chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
-                        if(finalI != 6){ // put the rootNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) to the first index of the keyChordNoteArray
+                        if(finalI != 6){ // the rootNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) belongs to the first index of the keyChordNoteArray -> the index of everything else is shifted by one
                             if(keyNotesCheckBoxesArray[finalI].isSelected()){
                                 getBufferOneChord().getKeyChordNotes()[finalI+1] = getCalcMelody().extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
                             } else {
@@ -529,7 +530,7 @@ public class GUI{
             });
         }
 
-        // extraNotesCheckBoxes ActionListener
+        // extraNotesCheckBoxes ActionListeners
         for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
             int finalI = i; // i muss "effectively final" sein (warum auch immer)
             extraNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
@@ -542,7 +543,7 @@ public class GUI{
                             getBufferOneChord().getExtraChordNotes()[finalI] = null;
                         }
                     } else { // rootNote == extraNote
-                        if(finalI != 4){ // put the rootNote (which is at the last index (of 4) in the extraNotesCheckBoxesArray) to the first index of the extraChordNotesArray
+                        if(finalI != 4){ // the rootNote (which is at the last index (of 4) in the extraNotesCheckBoxesArray) belongs to the first index of the extraChordNotesArray  -> the index of everything else is shifted by one
                             if(extraNotesCheckBoxesArray[finalI].isSelected()){
                                 getBufferOneChord().getExtraChordNotes()[finalI+1] = extraNotesCheckBoxesArray[finalI].getText();
                             } else {
@@ -923,12 +924,18 @@ public class GUI{
     }
 
     private void updateChordRootNoteModel(){
-        // Delete all elements but the last one (caused NullPinterException)
+        // Delete all elements but the last one (caused NullPointerException)
         int size = chordRootNoteModel.getSize();
         for(int i = 0; i < size-1; i++){
             chordRootNoteModel.removeElementAt(0);
         }
         // Add new elements
+        addChordRootNoteModelElements();
+        // Delete the last element that was still left from the last set of notes
+        chordRootNoteModel.removeElementAt(0);
+    }
+
+    private void addChordRootNoteModelElements(){
         for(int i = getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()); i < getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()) + getCalcMelody().getAllNotes().length; i++){
             if(i < getCalcMelody().getAllNotes().length){
                 if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){
@@ -944,7 +951,6 @@ public class GUI{
                 }
             }
         }
-        chordRootNoteModel.removeElementAt(0); // Delete the last element
     }
 
     private void updateCheckBoxes(){ // updates which CheckBoxes should be visible depending on the currently selected key/rootNote & updates the names of the notes of the CheckBoxes
