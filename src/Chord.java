@@ -1,28 +1,29 @@
 public class Chord {
 
-    private String baseNote;
+    private String rootNote;
     private String[] keyChordNotes;
     private String[] extraChordNotes;
+    private Melody calcMelody;
 
-    public Chord(String baseNote, boolean key){
+    public Chord(String rootNote, boolean key){
         setKeyChordNotes(new String[7]);
         setExtraChordNotes(new String[5]);
-        setBaseNote(baseNote, key);
+        setRootNote(rootNote, key);
     }
 
 
     // Getters & Setters
 
-    public String getBaseNote(){
-        return this.baseNote;
+    public String getRootNote(){
+        return this.rootNote;
     }
 
-    public void setBaseNote(String baseNote, boolean key){
-        this.baseNote = baseNote;
-        if(key){ // baseNote == keyNote
-            getKeyChordNotes()[0] = getBaseNote();
-        } else { // baseNote == extraNote
-            getExtraChordNotes()[0] = getBaseNote();
+    public void setRootNote(String rootNote, boolean key){
+        this.rootNote = rootNote;
+        if(key){ // rootNote == keyNote
+            getKeyChordNotes()[0] = getCalcMelody().extractActualNoteName(getRootNote());
+        } else { // rootNote == extraNote
+            getExtraChordNotes()[0] = getCalcMelody().extractActualNoteName(getRootNote());
         }
     }
 
@@ -40,6 +41,14 @@ public class Chord {
 
     public void setExtraChordNotes(String[] extraChordNotes) {
         this.extraChordNotes = extraChordNotes;
+    }
+
+    public Melody getCalcMelody(){
+        return this.calcMelody;
+    }
+
+    public void setCalcMelody(Melody calcMelody){
+        this.calcMelody = calcMelody;
     }
 
 

@@ -303,7 +303,7 @@ public class Melody {
         }
     }
 
-    public String extractActualNoteName(String note){
+    public static String extractActualNoteName(String note){
         int index = 0;
         String actualNoteName = "";
         while(index < note.length() && note.charAt(index) != ' '){ // (index < note.length) is not necessary for the names of the CheckBoxNotes; could be used for chordBaseNoteCB if roman numbers in brackets (C (I); C#; D (II) ...) are added for chord function in key

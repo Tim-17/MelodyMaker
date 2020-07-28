@@ -29,7 +29,7 @@ public class ChordsPanel extends JPanel{
             xPos = clear*i+rect*(i-1);
             if(getChords()[i-1] != null){
                 g.setColor(Color.BLACK);
-                g.drawString(getChords()[i-1].getBaseNote(), (xPos+rect/2)-(g.getFontMetrics().stringWidth(getChords()[i-1].getBaseNote())/2), Main.OTHER_FRAME_HEIGHT/2+(g.getFontMetrics().getHeight()/2)); // place the chordBaseNote String at the center of the boxes
+                g.drawString(getChords()[i-1].getRootNote(), (xPos+rect/2)-(g.getFontMetrics().stringWidth(getChords()[i-1].getRootNote())/2), Main.OTHER_FRAME_HEIGHT/2+(g.getFontMetrics().getHeight()/2)); // place the chordBaseNote String at the center of the boxes
             } else {
                 g.setColor(new Color(0,0,0,0));
                 g.fillRoundRect(xPos+1, Main.OTHER_FRAME_HEIGHT/3+1, rect-1, Main.OTHER_FRAME_HEIGHT/3-1, 10, 10);
