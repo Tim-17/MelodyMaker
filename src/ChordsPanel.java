@@ -8,7 +8,6 @@ public class ChordsPanel extends JPanel{
 
     public ChordsPanel(){
         setLength(16);
-        setChords(new Chord[getLength()]);
     }
 
     @Override
@@ -43,6 +42,7 @@ public class ChordsPanel extends JPanel{
 
     public void setLength(int length){
         this.length = length;
+        setChords(new Chord[getLength()]);
     }
 
     public Chord[] getChords(){

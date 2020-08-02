@@ -8,7 +8,6 @@ public class RhythmPanel extends JPanel{
 
     public RhythmPanel(){
        setLength(16);
-       setRhythm(new boolean[getLength()]);
     }
 
     @Override
@@ -45,6 +44,7 @@ public class RhythmPanel extends JPanel{
 
     public void setLength(int length){
         this.length = length;
+        setRhythm(new boolean[getLength()]);
     }
 
     public boolean[] getRhythm(){

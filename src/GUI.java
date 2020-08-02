@@ -469,12 +469,17 @@ public class GUI{
             }
         });
 
-        oneChordInput.addComponentListener(new ComponentAdapter() {
+        oneChordInput.addComponentListener(new ComponentAdapter(){
             @Override
-            public void componentShown(ComponentEvent e) {
+            public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 if(getEditChord()){
+                    // Output
+                    System.out.println("BufferChords: ");
+                    outputChords(getBufferChords());
+                    System.out.println("Beginning Index: " + getChordBeginningIndex());
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
+                    // System.out.println("getBufferChords()[getChordBeginningIndex()].getRootNote(): " + getBufferChords()[getChordBeginningIndex()].getRootNote());
                     setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                     updateCheckBoxes();
                     updateCheckBoxSelectionStatus(getBufferOneChord());
@@ -486,7 +491,7 @@ public class GUI{
             }
 
             @Override
-            public void componentHidden(ComponentEvent e) {
+            public void componentHidden(ComponentEvent e){
                 super.componentHidden(e);
             }
         });
@@ -507,7 +512,7 @@ public class GUI{
 
         // keyNotesCheckBoxes ActionListeners
         for(int i = 0; i < keyNotesCheckBoxesArray.length; i++){
-            int finalI = i; // i muss "effectively final" sein (warum auch immer)
+            int finalI = i; // i has to be "effectively final" (god knows why)
             keyNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
@@ -532,11 +537,11 @@ public class GUI{
 
         // extraNotesCheckBoxes ActionListeners
         for(int i = 0; i < extraNotesCheckBoxesArray.length; i++){
-            int finalI = i; // i muss "effectively final" sein (warum auch immer)
+            int finalI = i; // i has to be "effectively final" (god knows why)
             extraNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String) chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote -> copy extraNotesArray the way it is
+                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote -> copy extraNotesArray the way it is
                         if(extraNotesCheckBoxesArray[finalI].isSelected()){
                             getBufferOneChord().getExtraChordNotes()[finalI] = extraNotesCheckBoxesArray[finalI].getText();
                         } else {
@@ -568,8 +573,8 @@ public class GUI{
                 // Output
                 System.out.println("BufferChords: ");
                 outputChords(getBufferChords());
-                System.out.println("PanelChords: ");
-                outputChords(chordsInputPanel.getChords());
+                // System.out.println("Chords: ");
+                // outputChords(getChords());
             }
         });
 
@@ -603,7 +608,7 @@ public class GUI{
             public void actionPerformed(ActionEvent e){
                 setChords(new Chord[getLength()]);
                 setBufferChords(new Chord[getLength()]);
-                chordsInputPanel.setChords(getChords());
+                chordsInputPanel.setChords(getChords()); // TODO: find out whether it's smarter to create a new Chord[] or to reference getChords() which were just given the value of a new Chord[]
                 chordsInputPanel.repaint();
                 setChordsEntered(false);
                 deleteChords.setVisible(false);
@@ -683,7 +688,7 @@ public class GUI{
             }
         });
 
-        timeSigCB.addActionListener(new ActionListener(){
+        timeSigCB.addActionListener(new ActionListener(){ // TODO: store images in an array and use only one smart "for statement" to add the respective elements to the subdivModel
             @Override
             public void actionPerformed(ActionEvent e){
                 // Delete all elements in smallestSubdivCB
@@ -909,7 +914,6 @@ public class GUI{
         setChords(new Chord[getLength()]);
         chordsInput.setVisible(false); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
         rhythmInputPanel.setLength(getLength());
-        rhythmInputPanel.setRhythm(getRhythm());
         rhythmInputPanel.repaint();
         chordsInputPanel.setLength(getLength());
         chordsInputPanel.repaint();
