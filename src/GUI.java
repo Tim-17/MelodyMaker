@@ -10,7 +10,7 @@ public class GUI{
     private Melody melody, calcMelody;
     private MusicPlayer musicPlayer;
     private JFrame frame, rhythmInput, chordsInput, oneChordInput;
-    private JPanel frameBorderPanel, userInput, extraInput, keyChoice, rhythmDisplay, rhythmFramePanel, chordsDisplay, chordsFramePanel, oneChordPanel, oneChordContentPanel, keyNotesCheckBoxPanel, extraNotesCheckBoxPanel, fillPanel, keyParameters, melodyDisplay, sheetMusic;
+    private JPanel frameBorderPanel, userInputPanel, extraInputPanel, keyChoicePanel, rhythmDisplayPanel, rhythmFramePanel, chordsDisplayPanel, chordsFramePanel, oneChordPanel, oneChordContentPanel, keyNotesCheckBoxPanel, extraNotesCheckBoxPanel, lengthAndMelodyPanel, lengthParametersLabelsPanel, lengthParametersComboBoxesPanel, melodyOutputPanel;
     private RhythmPanel rhythmInputPanel;
     private ChordsPanel chordsInputPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB;
@@ -51,19 +51,19 @@ public class GUI{
         frameBorderPanel.setLayout(new BorderLayout());
         rhythmInputPanel = new RhythmPanel();
         chordsInputPanel = new ChordsPanel();
-        userInput = new JPanel();
-        userInput.setLayout(new GridLayout(1,2));
-        extraInput = new JPanel();
-        extraInput.setLayout(new GridLayout(7,1));
-        keyChoice = new JPanel();
-        keyChoice.setLayout(new GridLayout(1,2));
-        rhythmDisplay = new JPanel();
-        rhythmDisplay.setLayout(new BorderLayout());
+        userInputPanel = new JPanel();
+        userInputPanel.setLayout(new GridLayout(1,2));
+        extraInputPanel = new JPanel();
+        extraInputPanel.setLayout(new GridLayout(6,1));
+        keyChoicePanel = new JPanel();
+        keyChoicePanel.setLayout(new GridLayout(1,2));
+        rhythmDisplayPanel = new JPanel();
+        rhythmDisplayPanel.setLayout(new BorderLayout());
         rhythmFramePanel = new JPanel();
         rhythmFramePanel.setPreferredSize(new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT));
         rhythmFramePanel.setLayout(new BorderLayout());
-        chordsDisplay = new JPanel();
-        chordsDisplay.setLayout(new BorderLayout());
+        chordsDisplayPanel = new JPanel();
+        chordsDisplayPanel.setLayout(new BorderLayout());
         chordsFramePanel = new JPanel();
         chordsFramePanel.setPreferredSize(new Dimension(Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT));
         chordsFramePanel.setLayout(new BorderLayout());
@@ -76,13 +76,13 @@ public class GUI{
         keyNotesCheckBoxPanel.setLayout(new GridLayout(7,1));
         extraNotesCheckBoxPanel = new JPanel();
         extraNotesCheckBoxPanel.setLayout(new GridLayout(5,1));
-        fillPanel = new JPanel();
-        fillPanel.setLayout(new GridLayout(2,1));
-        keyParameters = new JPanel();
-        keyParameters.setLayout(new GridLayout(2,3));
-        melodyDisplay = new JPanel();
-        melodyDisplay.setLayout(new BorderLayout());
-        sheetMusic = new JPanel();
+        lengthAndMelodyPanel = new JPanel();
+        lengthAndMelodyPanel.setLayout(new GridLayout(6,1));
+        lengthParametersLabelsPanel = new JPanel();
+        lengthParametersLabelsPanel.setLayout(new GridLayout(1,3));
+        lengthParametersComboBoxesPanel = new JPanel();
+        lengthParametersComboBoxesPanel.setLayout(new GridLayout(1,3));
+        melodyOutputPanel = new JPanel();
         keyCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
         keyCB.setSelectedIndex(0);
         keyCB.setMaximumRowCount(12);
@@ -177,22 +177,20 @@ public class GUI{
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frameBorderPanel.add(userInput, BorderLayout.CENTER);
-        frameBorderPanel.add(melodyDisplay, BorderLayout.SOUTH);
+        frameBorderPanel.add(userInputPanel, BorderLayout.CENTER);
 
-        userInput.add(extraInput);
-        userInput.add(fillPanel);
+        userInputPanel.add(extraInputPanel);
+        userInputPanel.add(lengthAndMelodyPanel);
 
-        extraInput.add(keyL);
-        extraInput.add(keyChoice);
-        extraInput.add(enterRhythmB);
-        extraInput.add(rhythmDisplay);
-        extraInput.add(enterChordsB);
-        extraInput.add(chordsDisplay);
-        extraInput.add(createMelodyB);
+        extraInputPanel.add(keyL);
+        extraInputPanel.add(keyChoicePanel);
+        extraInputPanel.add(enterRhythmB);
+        extraInputPanel.add(rhythmDisplayPanel);
+        extraInputPanel.add(enterChordsB);
+        extraInputPanel.add(chordsDisplayPanel);
 
-        keyChoice.add(keyCB);
-        keyChoice.add(majorCB);
+        keyChoicePanel.add(keyCB);
+        keyChoicePanel.add(majorCB);
 
         rhythmInput.add(rhythmFramePanel);
         rhythmInput.pack();
@@ -245,22 +243,23 @@ public class GUI{
         extraNotesCheckBoxPanel.add(extraNoteCheckBox4);
         extraNotesCheckBoxPanel.add(extraNoteCheckBox5);
 
-        rhythmDisplay.add(deleteRhythm, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
-        chordsDisplay.add(deleteChords, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+        rhythmDisplayPanel.add(deleteRhythm, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+        chordsDisplayPanel.add(deleteChords, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
-        fillPanel.add(keyParameters);
-        fillPanel.add(new JLabel());
+        lengthAndMelodyPanel.add(lengthParametersLabelsPanel);
+        lengthAndMelodyPanel.add(lengthParametersComboBoxesPanel);
+        lengthAndMelodyPanel.add(createMelodyB);
+        lengthAndMelodyPanel.add(melodyL);
+        lengthAndMelodyPanel.add(melodyOutputPanel);
+        lengthAndMelodyPanel.add(playMelodyB);
 
-        keyParameters.add(timeSigL);
-        keyParameters.add(numberMeasuresL);
-        keyParameters.add(smallestSubdivL);
-        keyParameters.add(timeSigCB);
-        keyParameters.add(numberMeasuresCB);
-        keyParameters.add(smallestSubdivCB);
+        lengthParametersLabelsPanel.add(timeSigL);
+        lengthParametersLabelsPanel.add(numberMeasuresL);
+        lengthParametersLabelsPanel.add(smallestSubdivL);
 
-        melodyDisplay.add(melodyL, BorderLayout.NORTH);
-        melodyDisplay.add(sheetMusic, BorderLayout.CENTER);
-        melodyDisplay.add(playMelodyB, BorderLayout.SOUTH);
+        lengthParametersComboBoxesPanel.add(timeSigCB);
+        lengthParametersComboBoxesPanel.add(numberMeasuresCB);
+        lengthParametersComboBoxesPanel.add(smallestSubdivCB);
 
         frame.setVisible(true);
 
@@ -474,17 +473,17 @@ public class GUI{
             public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 if(getEditChord()){
+                    // TODO: fix error that when in this chord progression (F F C C) one wants to edit the first chord and decides not to do so the next chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
                     // Output
-                    System.out.println("BufferChords: ");
+                    System.out.println("BufferChords (ComponentListener): ");
                     outputChords(getBufferChords());
-                    System.out.println("Beginning Index: " + getChordBeginningIndex());
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
-                    // System.out.println("getBufferChords()[getChordBeginningIndex()].getRootNote(): " + getBufferChords()[getChordBeginningIndex()].getRootNote());
+                    System.out.println("getBufferChords()[getChordBeginningIndex()].getRootNote(): " + getBufferChords()[getChordBeginningIndex()].getRootNote());
                     setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                     updateCheckBoxes();
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                 } else {
-                    setBufferOneChord(new Chord((String) chordRootNoteCB.getItemAt(0), true));
+                    setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                     chordRootNoteCB.setSelectedIndex(0);
                 }
@@ -516,7 +515,7 @@ public class GUI{
             keyNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String) chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
                         if(finalI != 6){ // the rootNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) belongs to the first index of the keyChordNoteArray -> the index of everything else is shifted by one
                             if(keyNotesCheckBoxesArray[finalI].isSelected()){
                                 getBufferOneChord().getKeyChordNotes()[finalI+1] = getCalcMelody().extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
@@ -571,7 +570,7 @@ public class GUI{
                 chordsInputPanel.setChords(getBufferChords());
                 chordsInputPanel.repaint();
                 // Output
-                System.out.println("BufferChords: ");
+                System.out.println("BufferChords (saveOneChord): ");
                 outputChords(getBufferChords());
                 // System.out.println("Chords: ");
                 // outputChords(getChords());
@@ -1013,7 +1012,7 @@ public class GUI{
     }
 
     private void updateCheckBoxSelectionStatus(Chord chord){ // updates the CheckBoxes so that their selection status corresponds to the selected notes of the parameter (input) chord
-        if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String) chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+        if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
             // keyNoteCheckBoxes
             for(int i = 0; i < keyNotesCheckBoxesArray.length-1; i++){ // omit the last CheckBox because it's the root note and not visible anyway
                 keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i+1] != null);
