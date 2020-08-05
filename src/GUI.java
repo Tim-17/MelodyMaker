@@ -454,6 +454,9 @@ public class GUI{
                     if(openWindow){
                         oneChordInput.setVisible(true);
                     }
+                    // Output
+                    System.out.println("mouseReleased: \nBufferChords (ComponentListener): ");
+                    outputChords(getBufferChords());
                 }
             }
 
@@ -474,8 +477,9 @@ public class GUI{
                 super.componentShown(e);
                 if(getEditChord()){
                     // TODO: fix error that when in this chord progression (F F C C) one wants to edit the first chord and decides not to do so the next chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
+                    // Problem taucht auf zwischen dem Auf-den-nicht-letzten-Chord-Drücken und dem darauffolgenden auf den letzten/ncähsten Chord drücken (jeweils mit Linksklick) -> bereits beim Release der Maus sind die Chords falsch
                     // Output
-                    System.out.println("BufferChords (ComponentListener): ");
+                    System.out.println("oneChordInputFrame.setVisible: \nBufferChords (ComponentListener): ");
                     outputChords(getBufferChords());
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
                     System.out.println("getBufferChords()[getChordBeginningIndex()].getRootNote(): " + getBufferChords()[getChordBeginningIndex()].getRootNote());
