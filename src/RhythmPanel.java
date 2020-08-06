@@ -5,12 +5,16 @@ public class RhythmPanel extends JPanel{
 
     private int length;
     public boolean[] rhythm;
-    private boolean erase;
+    private boolean erase, mainRhythm;
 
-    public RhythmPanel(){
+    public RhythmPanel(boolean mainRhythm){
        setLength(16);
        setErase(false);
+       setMainRhythm(mainRhythm);
     }
+
+
+    // Other methods
 
     @Override
     public Dimension getPreferredSize(){
@@ -19,31 +23,41 @@ public class RhythmPanel extends JPanel{
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        if(!getErase()){
-            int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
-            int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
-            g.setColor(Color.BLACK);
-            for(int i = 1; i <= getLength(); i++){
-                g.drawRoundRect(clear*i+rect*(i-1), Main.OTHER_FRAME_HEIGHT/3, rect, Main.OTHER_FRAME_HEIGHT/3, 10, 10);
-            }
-            int xPos;
-            for(int i = 1; i <= getLength(); i++){
-                xPos = clear*i+rect*(i-1);
-                if(getRhythm()[i-1]){
-                    g.setColor(Color.CYAN);
-                    g.fillRoundRect(xPos+1, Main.OTHER_FRAME_HEIGHT/3+1, rect-1, Main.OTHER_FRAME_HEIGHT/3-1, 10, 10);
-                } else {
-                    g.setColor(new Color(0,0,0,0));
-                    g.fillRoundRect(xPos+1, Main.OTHER_FRAME_HEIGHT/3+1, rect-1, Main.OTHER_FRAME_HEIGHT/3-1, 10, 10);
-                    g.setColor(Color.BLACK);
-                    g.drawRoundRect(xPos, Main.OTHER_FRAME_HEIGHT/3, rect, Main.OTHER_FRAME_HEIGHT/3, 10, 10);
-                }
-            }
+        if(getMainRhythm()){
+            drawRectangles(g, Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
         } else {
-            g.setColor(new Color(0,0,0,0));
-            g.fillRect(0,0, Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
+            if(!getErase()){
+                drawRectangles(g, Main.MAIN_FRAME_WIDTH/2, Main.MAIN_FRAME_HEIGHT/7);
+            } else {
+                g.clearRect(0,0, Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
+            }
         }
     }
+
+    private void drawRectangles(Graphics g, int width, int height){
+        int clear = (width/4)/(getLength()+1);
+        int rect = (width*3/4)/getLength();
+        g.setColor(Color.BLACK);
+        for(int i = 1; i <= getLength(); i++){
+            g.drawRoundRect(clear*i+rect*(i-1), height/3, rect, height/3, 10, 10);
+        }
+        int xPos;
+        for(int i = 1; i <= getLength(); i++){
+            xPos = clear*i+rect*(i-1);
+            if(getRhythm()[i-1]){
+                g.setColor(Color.CYAN);
+                g.fillRoundRect(xPos+1, height/3+1, rect-1, height/3-1, 10, 10);
+            } else {
+                g.setColor(new Color(0,0,0,0));
+                g.fillRoundRect(xPos+1, height/3+1, rect-1, height/3-1, 10, 10);
+                g.setColor(Color.BLACK);
+                g.drawRoundRect(xPos, height/3, rect, height/3, 10, 10);
+            }
+        }
+    }
+
+
+    // Getters & Setters
 
     public int getLength(){
         return this.length;
@@ -69,4 +83,14 @@ public class RhythmPanel extends JPanel{
     public void setErase(boolean erase){
         this.erase = erase;
     }
+
+    public boolean getMainRhythm(){
+        return this.mainRhythm;
+    }
+
+    public void setMainRhythm(boolean mainRhythm){
+        this.mainRhythm = mainRhythm;
+    }
+
+
 }

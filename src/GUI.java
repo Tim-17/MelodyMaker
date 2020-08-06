@@ -49,8 +49,8 @@ public class GUI{
         oneChordInput = new JFrame("Build your chord");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
-        rhythmInputPanel = new RhythmPanel();
-        rhythmDisplayRhythmPanel = new RhythmPanel();
+        rhythmInputPanel = new RhythmPanel(true);
+        rhythmDisplayRhythmPanel = new RhythmPanel(false);
         chordsInputPanel = new ChordsPanel();
         chordsDisplayChordsPanel = new ChordsPanel();
         userInputPanel = new JPanel();
@@ -355,7 +355,7 @@ public class GUI{
                     enterRhythmB.setText("Enter rhythm");
                     rhythmDisplayRhythmPanel.setErase(true);
                 }
-                rhythmDisplayRhythmPanel.repaint(); // TODO: make rhythmDisplay work
+                rhythmDisplayRhythmPanel.repaint(); // TODO: make rhythmDisplay not appear when MelodyMaker is first started
             }
         });
 
@@ -580,7 +580,7 @@ public class GUI{
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                // TODO: fix error that all chords are shifted by one when a single chord is changed (F F C C) is supposed to go to this -> (G F C C), but instead it goes to this -> (G G F F)
+                // (TODO: fix error that all chords are shifted by one when a single chord is changed (F F C C) is supposed to go to this -> (G F C C), but instead it goes to this -> (G G F F))
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
                 }
@@ -687,7 +687,7 @@ public class GUI{
             }
         });
 
-        // TODO: update getChords() when key is changed -> transpose (add toRoman numbers back in)
+        // TODO: update getChords() when key is changed -> transpose
 
         keyCB.addActionListener(new ActionListener(){
             @Override
