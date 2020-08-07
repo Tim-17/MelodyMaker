@@ -16,7 +16,8 @@ class ComboBoxColorRenderer extends DefaultListCellRenderer{
         Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if(c instanceof JLabel){
             if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value)) != -1){
-                c.setBackground(new Color(0, 255, 119, 75));
+                c.setBackground(new Color(0, 147, 65, 34));
+                c.setForeground(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value))]);
             } else {
                 c.setBackground(new Color(0,0,0,0));
             }

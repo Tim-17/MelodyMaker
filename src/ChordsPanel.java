@@ -30,7 +30,7 @@ public class ChordsPanel extends JPanel{
         }
     }
 
-    private void drawRectangles(Graphics g, int width, int height){
+    private void drawRectangles(Graphics g, int width, int height){ // TODO: implement colored rectangle chord display
         int clear = (width/4)/(getLength()+1);
         int rect = (width*3/4)/getLength();
         g.setColor(Color.BLACK);
