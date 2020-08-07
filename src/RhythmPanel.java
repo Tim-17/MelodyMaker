@@ -13,7 +13,7 @@ public class RhythmPanel extends JPanel{
     }
 
 
-    // Other methods
+    // Actual methods
 
     @Override
     public Dimension getPreferredSize(){

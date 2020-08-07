@@ -52,7 +52,7 @@ public class Chord {
     }
 
 
-    // Other methods
+    // Actual methods
 
     public boolean extraNotesEntered(){
         for(int i = 0; i < getExtraChordNotes().length; i++){

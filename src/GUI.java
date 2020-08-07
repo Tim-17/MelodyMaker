@@ -911,9 +911,9 @@ public class GUI{
     }
 
 
-    // Other methods
+    // Actual methods
 
-    // TODO: make new getChords() when length is changed (except when only numberOfMeasures is changed -> then copy the respective measures)
+    // (TODO: make new getChords() when length is changed (except when only numberOfMeasures is changed -> then copy the respective measures))
 
     private void updateLength(){
         if(smallestSubdivCB.getSelectedItem() == whole){
