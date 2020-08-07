@@ -5,12 +5,11 @@ public class RhythmPanel extends JPanel{
 
     private int length;
     public boolean[] rhythm;
-    private boolean erase, mainRhythm;
+    private boolean erase;
 
-    public RhythmPanel(boolean mainRhythm){
+    public RhythmPanel(){
        setLength(16);
        setErase(false);
-       setMainRhythm(mainRhythm);
     }
 
 
@@ -23,14 +22,11 @@ public class RhythmPanel extends JPanel{
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        if(getMainRhythm()){
-            drawRectangles(g, Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
+        if(!getErase()){
+            drawRectangles(g, this.getWidth(), this.getHeight());
         } else {
-            if(!getErase()){
-                drawRectangles(g, Main.MAIN_FRAME_WIDTH/2, Main.MAIN_FRAME_HEIGHT/7);
-            } else {
-                g.clearRect(0,0, Main.OTHER_FRAME_WIDTH, Main.OTHER_FRAME_HEIGHT);
-            }
+            g.setColor(new Color(0,0,0,0));
+            g.fillRect(0,0, this.getWidth(), this.getHeight());
         }
     }
 
@@ -83,14 +79,4 @@ public class RhythmPanel extends JPanel{
     public void setErase(boolean erase){
         this.erase = erase;
     }
-
-    public boolean getMainRhythm(){
-        return this.mainRhythm;
-    }
-
-    public void setMainRhythm(boolean mainRhythm){
-        this.mainRhythm = mainRhythm;
-    }
-
-
 }

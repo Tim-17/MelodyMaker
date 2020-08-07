@@ -49,10 +49,12 @@ public class GUI{
         oneChordInput = new JFrame("Build your chord");
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
-        rhythmInputPanel = new RhythmPanel(true);
-        rhythmDisplayRhythmPanel = new RhythmPanel(false);
+        rhythmInputPanel = new RhythmPanel();
+        rhythmDisplayRhythmPanel = new RhythmPanel(); // TODO: use only this panel for rhythmInput and get rid of rhythmInputFrame & bufferRhythm
+        rhythmDisplayRhythmPanel.setErase(true);
         chordsInputPanel = new ChordsPanel();
-        chordsDisplayChordsPanel = new ChordsPanel();
+        chordsDisplayChordsPanel = new ChordsPanel(); // TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords
+        chordsDisplayChordsPanel.setErase(true);
         userInputPanel = new JPanel();
         userInputPanel.setLayout(new GridLayout(1,2));
         extraInputPanel = new JPanel();
@@ -355,7 +357,7 @@ public class GUI{
                     enterRhythmB.setText("Enter rhythm");
                     rhythmDisplayRhythmPanel.setErase(true);
                 }
-                rhythmDisplayRhythmPanel.repaint(); // TODO: make rhythmDisplay not appear when MelodyMaker is first started
+                rhythmDisplayRhythmPanel.repaint();
             }
         });
 
@@ -599,6 +601,7 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 setChords(getBufferChords());
+                chordsDisplayChordsPanel.setChords(getChords());
                 chordsInput.setVisible(false);
                 oneChordInput.setVisible(false);
                 setChordsEntered(false);
@@ -607,26 +610,32 @@ public class GUI{
                         setChordsEntered(true);
                         deleteChords.setVisible(true);
                         enterChordsB.setText("Edit chords");
+                        chordsDisplayChordsPanel.setErase(false);
                         break;
                     }
                 }
                 if(!getChordsEntered()){
                     deleteChords.setVisible(false);
                     enterChordsB.setText("Enter chords");
+                    chordsDisplayChordsPanel.setErase(true);
                 }
+                chordsDisplayChordsPanel.repaint();
                 // Output
                 System.out.println("Chords: ");
                 outputChords(getChords());
             }
         });
 
-        deleteChords.addActionListener(new ActionListener(){
+        deleteChords.addActionListener(new ActionListener(){ // TODO: fix bug that once deleteChords was pressed the first keyCheckBox is selected
             @Override
             public void actionPerformed(ActionEvent e){
                 setChords(new Chord[getLength()]);
                 setBufferChords(new Chord[getLength()]);
                 chordsInputPanel.setChords(getChords()); // TODO: find out whether it's smarter to create a new Chord[] or to reference getChords() which were just given the value of a new Chord[]
                 chordsInputPanel.repaint();
+                chordsDisplayChordsPanel.setChords(getChords());
+                chordsDisplayChordsPanel.setErase(true);
+                chordsDisplayChordsPanel.repaint();
                 setChordsEntered(false);
                 deleteChords.setVisible(false);
                 enterChordsB.setText("Enter chords");
@@ -937,6 +946,9 @@ public class GUI{
         rhythmDisplayRhythmPanel.repaint();
         chordsInputPanel.setLength(getLength());
         chordsInputPanel.repaint();
+        chordsDisplayChordsPanel.setLength(getLength());
+        chordsDisplayChordsPanel.setErase(true);
+        chordsDisplayChordsPanel.repaint();
         oneChordInput.setVisible(false); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
     }
 
