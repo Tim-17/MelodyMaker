@@ -52,9 +52,6 @@ public class GUI{
         rhythmInputPanel = new RhythmPanel();
         rhythmDisplayRhythmPanel = new RhythmPanel(); // TODO: use only this panel for rhythmInput and get rid of rhythmInputFrame & bufferRhythm
         rhythmDisplayRhythmPanel.setErase(true);
-        chordsInputPanel = new ChordsPanel();
-        chordsDisplayChordsPanel = new ChordsPanel(); // TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords
-        chordsDisplayChordsPanel.setErase(true);
         userInputPanel = new JPanel();
         userInputPanel.setLayout(new GridLayout(1,2));
         extraInputPanel = new JPanel();
@@ -167,7 +164,10 @@ public class GUI{
         chordRootNoteCB.setMaximumRowCount(12);
         updateCheckBoxes();
         setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
-
+        
+        chordsInputPanel = new ChordsPanel(getCalcMelody());
+        chordsDisplayChordsPanel = new ChordsPanel(getCalcMelody()); // TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords
+        chordsDisplayChordsPanel.setErase(true);
 
         // GUI structuring
 
@@ -303,8 +303,8 @@ public class GUI{
         rhythmInputPanel.addMouseListener(new MouseListener(){
             @Override
             public void mouseClicked(MouseEvent e){
-                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
-                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1); // width of the space in between rectangles
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength(); // width of each rectangle
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
                         getBufferRhythm()[i-1] = !getBufferRhythm()[i-1];
@@ -418,8 +418,8 @@ public class GUI{
                 }
                 setChordBeginningIndex(-1);
                 setChordEndingIndex(-1);
-                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
-                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1); // width of the space in between rectangles
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength(); // width of each rectangle
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
                         setChordBeginningIndex(i-1);
@@ -436,8 +436,8 @@ public class GUI{
 
             @Override
             public void mouseReleased(MouseEvent e){
-                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1);
-                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength();
+                int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1); // width of the space in between rectangles
+                int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength(); // width of each rectangle
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
                         if((i-1) < getChordBeginningIndex()){
@@ -519,12 +519,12 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 updateCheckBoxes();
-                if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+                if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
                     getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), true);
                 } else { // rootNote == extraNote
                     getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), false);
                 }
-                // kürzere Version: getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1);
+                // kürzere Version: getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1);
                 invokeCheckBoxActionListeners();
             }
         });
@@ -535,17 +535,17 @@ public class GUI{
             keyNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+                    if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
                         if(finalI != 6){ // the rootNote (which is at the last index (of 6) in the keyNotesCheckBoxesArray) belongs to the first index of the keyChordNoteArray -> the index of everything else is shifted by one
                             if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                                getBufferOneChord().getKeyChordNotes()[finalI+1] = getCalcMelody().extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
+                                getBufferOneChord().getKeyChordNotes()[finalI+1] = Melody.extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
                             } else {
                                 getBufferOneChord().getKeyChordNotes()[finalI+1] = null;
                             }
                         }
                     } else { // rootNote == extraNote -> copy keyNotesArray the way it is
                         if(keyNotesCheckBoxesArray[finalI].isSelected()){
-                            getBufferOneChord().getKeyChordNotes()[finalI] = getCalcMelody().extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
+                            getBufferOneChord().getKeyChordNotes()[finalI] = Melody.extractActualNoteName(keyNotesCheckBoxesArray[finalI].getText());
                         } else {
                             getBufferOneChord().getKeyChordNotes()[finalI] = null;
                         }
@@ -560,7 +560,7 @@ public class GUI{
             extraNotesCheckBoxesArray[i].addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote -> copy extraNotesArray the way it is
+                    if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote -> copy extraNotesArray the way it is
                         if(extraNotesCheckBoxesArray[finalI].isSelected()){
                             getBufferOneChord().getExtraChordNotes()[finalI] = extraNotesCheckBoxesArray[finalI].getText();
                         } else {
@@ -931,6 +931,8 @@ public class GUI{
         }
         setCalcMelody(new Melody(getLength()));
         comboBoxColorRenderer.setCalcMelody(getCalcMelody());
+        chordsInputPanel.setCalcMelody(getCalcMelody());
+        chordsDisplayChordsPanel.setCalcMelody(getCalcMelody());
         setRhythm(new boolean[getLength()]);
         setBufferRhythm(new boolean[getLength()]);
         for(ActionListener a : saveRhythmB.getActionListeners()){
@@ -991,7 +993,7 @@ public class GUI{
     }
 
     private void updateCheckBoxes(){ // updates which CheckBoxes should be visible depending on the currently selected key/rootNote & updates the names of the notes of the CheckBoxes
-        if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+        if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
             keyNoteCheckBox8.setVisible(false);
             extraNoteCheckBox5.setVisible(true);
             updateCheckBoxNotes();
@@ -1005,7 +1007,7 @@ public class GUI{
     private void updateCheckBoxNotes(){ // updates the names of the notes of the CheckBoxes
         int keyIndex = 0;
         int extraIndex = 0;
-        for(int i = getCalcMelody().findAllNotesIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem()))+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after rootNote
+        for(int i = getCalcMelody().findAllNotesIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem()))+1; i < getCalcMelody().getAllNotes().length; i++){ // start iteration through allNotes on note after rootNote
             if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
                 keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
                 keyIndex++;
@@ -1014,7 +1016,7 @@ public class GUI{
                 extraIndex++;
             }
         }
-        for(int i = 0; i <= getCalcMelody().findAllNotesIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())); i++){ // finish iteration through allNotes
+        for(int i = 0; i <= getCalcMelody().findAllNotesIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())); i++){ // finish iteration through allNotes
             if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){ // current note = keyNote
                 if(keyIndex != 6){
                     keyNotesCheckBoxesArray[keyIndex].setText(getCalcMelody().getAllNotes()[i] + " (" + (keyIndex+2) + "/" + (keyIndex+2+7) + ")");
@@ -1045,7 +1047,7 @@ public class GUI{
     }
 
     private void updateCheckBoxSelectionStatus(Chord chord){ // updates the CheckBoxes so that their selection status corresponds to the selected notes of the parameter (input) chord
-        if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
+        if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
             // keyNoteCheckBoxes
             for(int i = 0; i < keyNotesCheckBoxesArray.length-1; i++){ // omit the last CheckBox because it's the root note and not visible anyway
                 keyNotesCheckBoxesArray[i].setSelected(chord.getKeyChordNotes()[i+1] != null);

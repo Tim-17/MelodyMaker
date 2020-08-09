@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.GlyphVector;
 
 class ComboBoxColorRenderer extends DefaultListCellRenderer{
 
@@ -15,9 +16,9 @@ class ComboBoxColorRenderer extends DefaultListCellRenderer{
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
         Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if(c instanceof JLabel){
-            if(getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value)) != -1){
-                c.setBackground(new Color(0, 147, 65, 34));
-                c.setForeground(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value))]);
+            if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)value)) != -1){
+                c.setBackground(new Color(0, 255, 114, 69));
+                c.setForeground(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)value))]); // TODO: find way to draw a black border around the base note Strings
             } else {
                 c.setBackground(new Color(0,0,0,0));
             }

@@ -31,8 +31,8 @@ public class RhythmPanel extends JPanel{
     }
 
     private void drawRectangles(Graphics g, int width, int height){
-        int clear = (width/4)/(getLength()+1);
-        int rect = (width*3/4)/getLength();
+        int clear = (width/4)/(getLength()+1); // width of the space in between rectangles
+        int rect = (width*3/4)/getLength(); // width of each rectangle
         g.setColor(Color.BLACK);
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), height/3, rect, height/3, 10, 10);

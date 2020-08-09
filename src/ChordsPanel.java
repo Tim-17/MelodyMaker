@@ -6,10 +6,12 @@ public class ChordsPanel extends JPanel{
     private int length;
     private Chord[] chords;
     private boolean erase;
+    private Melody calcMelody;
 
-    public ChordsPanel(){
+    public ChordsPanel(Melody calcMelody){
         setLength(16);
         setErase(false);
+        setCalcMelody(calcMelody);
     }
 
 
@@ -31,12 +33,13 @@ public class ChordsPanel extends JPanel{
     }
 
     private void drawRectangles(Graphics g, int width, int height){ // TODO: implement colored rectangle chord display
-        int clear = (width/4)/(getLength()+1);
-        int rect = (width*3/4)/getLength();
+        int clear = (width/4)/(getLength()+1); // width of the space in between rectangles
+        int rect = (width*3/4)/getLength(); // width of each rectangle
         g.setColor(Color.BLACK);
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), height/3, rect, height/3, 10, 10);
         }
+        /*
         int xPos;
         for(int i = 1; i <= getLength(); i++){
             xPos = clear*i+rect*(i-1);
@@ -48,6 +51,45 @@ public class ChordsPanel extends JPanel{
                 g.fillRoundRect(xPos+1, height/3+1, rect-1, height/3-1, 10, 10);
             }
         }
+        */
+        int beginningIndex = 0;
+        Chord currentChord = getChords()[beginningIndex];
+        int drawStartingXCoordinate;
+        int drawWidth;
+        for(int i = 0; i < getLength()-1; i++){
+            // TODO: draw all rectangles in the color of their respective chord
+            if(currentChord != getChords()[i+1]){
+                if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
+                    g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
+                } else { // rootNote == extraNote
+                    g.setColor(Color.LIGHT_GRAY);
+                }
+                drawStartingXCoordinate = clear*(beginningIndex+1)+rect*(beginningIndex);
+                drawWidth = clear*(i-beginningIndex)+rect*(i-beginningIndex+1);
+                g.drawRoundRect(drawStartingXCoordinate, height/3, drawWidth, height/3, 10, 10);
+                g.drawString(currentChord.getRootNote(), drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2),height/2);
+                beginningIndex = i+1;
+                currentChord = getChords()[beginningIndex];
+            }
+        }
+        /* draws black border around text -> usable for display of baseNotes of chords
+
+        Graphics2D g2 = (Graphics2D)g;
+        // create glyph vector from text
+        GlyphVector glyphVector = getFont().createGlyphVector(g2.getFontRenderContext(), (String)value);
+        // get shape object
+        Shape textShape = glyphVector.getOutline();
+        // activate anti aliasing for text rendering (looks nicer)
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        // draw outline
+        g2.setColor(Color.BLACK);
+        g2.setStroke(new BasicStroke(2.0f));
+        g2.draw(textShape);
+        // fill shape
+        g2.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value))]);
+        g2.fill(textShape);
+        */
     }
 
 
@@ -76,5 +118,13 @@ public class ChordsPanel extends JPanel{
 
     public void setErase(boolean erase){
         this.erase = erase;
+    }
+
+    public Melody getCalcMelody(){
+        return this.calcMelody;
+    }
+
+    public void setCalcMelody(Melody calcMelody){
+        this.calcMelody = calcMelody;
     }
 }
