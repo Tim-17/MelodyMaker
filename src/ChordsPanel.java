@@ -35,10 +35,6 @@ public class ChordsPanel extends JPanel{
     private void drawRectangles(Graphics g, int width, int height){ // TODO: implement colored rectangle chord display
         int clear = (width/4)/(getLength()+1); // width of the space in between rectangles
         int rect = (width*3/4)/getLength(); // width of each rectangle
-        g.setColor(Color.BLACK);
-        for(int i = 1; i <= getLength(); i++){
-            g.drawRoundRect(clear*i+rect*(i-1), height/3, rect, height/3, 10, 10);
-        }
         /*
         int xPos;
         for(int i = 1; i <= getLength(); i++){
@@ -56,8 +52,18 @@ public class ChordsPanel extends JPanel{
         Chord currentChord = getChords()[beginningIndex];
         int drawStartingXCoordinate;
         int drawWidth;
+        // TODO: think about how chords that are null should be dealt with/included in the for-loop
         for(int i = 0; i < getLength()-1; i++){
-            // TODO: draw all rectangles in the color of their respective chord
+            // draw small rectangles
+            if(getChords()[i] == null){
+                g.setColor(Color.BLACK);
+            } else if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
+                g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
+            } else { // rootNote == extraNote
+                g.setColor(Color.LIGHT_GRAY);
+            }
+            g.drawRoundRect(clear*(i+1)+rect*i, height/3, rect, height/3, 10, 10);
+            // draw large rectangles
             if(currentChord != getChords()[i+1]){
                 if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
                     g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
@@ -72,6 +78,16 @@ public class ChordsPanel extends JPanel{
                 currentChord = getChords()[beginningIndex];
             }
         }
+        // TODO: check if this can somehow be included in the for-loop
+        // draw last small rectangle
+        if(getChords()[getLength()-1] == null){
+            g.setColor(Color.BLACK);
+        } else if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
+            g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
+        } else { // rootNote == extraNote
+            g.setColor(Color.LIGHT_GRAY);
+        }
+        g.drawRoundRect(clear*(getLength())+rect*(getLength()-1), height/3, rect, height/3, 10, 10);
         /* draws black border around text -> usable for display of baseNotes of chords
 
         Graphics2D g2 = (Graphics2D)g;
