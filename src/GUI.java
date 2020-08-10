@@ -167,7 +167,17 @@ public class GUI{
         
         chordsInputPanel = new ChordsPanel(getCalcMelody());
         chordsDisplayChordsPanel = new ChordsPanel(getCalcMelody()); // TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords
-        chordsDisplayChordsPanel.setErase(true);
+        //chordsDisplayChordsPanel.setErase(true);
+
+        Chord cChord = new Chord("G (V)", true);
+        chordsInputPanel.setChords(new Chord[getLength()]);
+        chordsDisplayChordsPanel.setChords(new Chord[getLength()]);
+        for(int i = 0; i < getLength(); i++){
+            chordsInputPanel.getChords()[i] = cChord;
+            chordsDisplayChordsPanel.getChords()[i] = cChord;
+            getChords()[i] = cChord;
+        }
+        setChordsEntered(true);
 
         // GUI structuring
 

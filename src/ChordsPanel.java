@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.GlyphVector;
 
 public class ChordsPanel extends JPanel{
 
@@ -52,23 +53,20 @@ public class ChordsPanel extends JPanel{
             }
         }
         */
+        // draw large rectangles
         int beginningIndex = 0;
         Chord currentChord = getChords()[beginningIndex];
+        Chord compareChord;
         int drawStartingXCoordinate;
         int drawWidth;
         // TODO: think about how chords that are null should be dealt with/included in the for-loop
-        for(int i = 0; i < getLength()-1; i++){ // TODO: check whether last index is included
-            // draw small rectangles
-            if(getChords()[i] == null){
-                g.setColor(Color.BLACK);
-            } else if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
-                g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
-            } else { // rootNote == extraNote
-                g.setColor(Color.LIGHT_GRAY);
+        for(int i = 0; i < getLength(); i++){
+            if(i < getLength()-1){
+                compareChord = getChords()[i+1];
+            } else {
+                compareChord = new Chord("#", false);
             }
-            g.drawRoundRect(clear*(i+1)+rect*i, height/3, rect, height/3, 10, 10);
-            // draw large rectangles
-            if(currentChord != getChords()[i+1]){
+            if(!Chord.chordsEqual(currentChord, compareChord)){
                 if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
                     g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
                 } else { // rootNote == extraNote
@@ -76,29 +74,41 @@ public class ChordsPanel extends JPanel{
                 }
                 drawStartingXCoordinate = clear*(beginningIndex+1)+rect*(beginningIndex);
                 drawWidth = clear*(i-beginningIndex)+rect*(i-beginningIndex+1);
-                g.drawRoundRect(drawStartingXCoordinate, height/2-height/20, drawWidth, height/10, 10, 10); // TODO: center the chord rectangle
-                g.drawString(currentChord.getRootNote(), drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2),height/2);
-                beginningIndex = i+1;
-                currentChord = getChords()[beginningIndex];
+                g.drawRoundRect(drawStartingXCoordinate, height/2-height/15, drawWidth, height/8, 10, 10);
+                g.drawString(currentChord.getRootNote(), drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2),height/2+(g.getFontMetrics().getHeight()/4));
+
+                // create black border around rootNote String
+                // drawTextBorder((Graphics2D)g, currentChord.getRootNote(), Color.BLACK, drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2), height/2+(g.getFontMetrics().getHeight()/4));
+
+                if(i < getLength()-1){
+                    beginningIndex = i+1;
+                    currentChord = getChords()[beginningIndex];
+                }
             }
         }
-        /* draws black border around text -> usable for display of baseNotes of chords
+    }
 
-        Graphics2D g2 = (Graphics2D)g;
+    private void drawTextBorder(Graphics2D g2d, String text, Color borderColor, int x, int y){
+        g2d.translate(x, y); // TODO: fix this
         // create glyph vector from text
-        GlyphVector glyphVector = getFont().createGlyphVector(g2.getFontRenderContext(), (String)value);
+        GlyphVector glyphVector = getFont().createGlyphVector(g2d.getFontRenderContext(), text);
         // get shape object
         Shape textShape = glyphVector.getOutline();
         // activate anti aliasing for text rendering (looks nicer)
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         // draw outline
-        g2.setColor(Color.BLACK);
-        g2.setStroke(new BasicStroke(2.0f));
-        g2.draw(textShape);
+        g2d.setColor(borderColor);
+        g2d.setStroke(new BasicStroke(0.5f));
+        g2d.draw(textShape);
+        /*
         // fill shape
-        g2.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(getCalcMelody().extractActualNoteName((String)value))]);
-        g2.fill(textShape);
+        if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(text)) != -1){ // rootNote == keyNote
+            g2d.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(text))]);
+        } else {
+            g2d.setColor(Color.LIGHT_GRAY); // rootNote == extraNote
+        }
+        g2d.fill(textShape);
         */
     }
 
