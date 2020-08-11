@@ -16,7 +16,7 @@ class ComboBoxColorRenderer extends DefaultListCellRenderer{
         Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if(c instanceof JLabel){
             if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)value)) != -1){
-                c.setBackground(new Color(0, 255, 114, 69));
+                c.setBackground(new Color(0, 113, 47, 69));
                 c.setForeground(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)value))]); // TODO: find way to draw a black border around the base note Strings
             } else {
                 c.setBackground(new Color(0,0,0,0));

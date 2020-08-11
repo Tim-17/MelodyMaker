@@ -33,56 +33,52 @@ public class ChordsPanel extends JPanel{
         }
     }
 
-    private void drawRectangles(Graphics g, int width, int height){ // TODO: implement colored rectangle chord display
+    private void drawRectangles(Graphics g, int width, int height){
         int clear = (width/4)/(getLength()+1); // width of the space in between rectangles
         int rect = (width*3/4)/getLength(); // width of each rectangle
+        // draw small rectangles for every beat
         g.setColor(Color.BLACK);
         for(int i = 1; i <= getLength(); i++){
             g.drawRoundRect(clear*i+rect*(i-1), height/3, rect, height/3, 10, 10);
         }
-        /*
-        int xPos;
-        for(int i = 1; i <= getLength(); i++){
-            xPos = clear*i+rect*(i-1);
-            if(getChords()[i-1] != null){
-                g.setColor(Color.BLACK);
-                g.drawString(getChords()[i-1].getRootNote(), (xPos+rect/2)-(g.getFontMetrics().stringWidth(getChords()[i-1].getRootNote())/2), height/2+(g.getFontMetrics().getHeight()/2)); // place the chordBaseNote String at the center of the boxes
-            } else {
-                g.setColor(new Color(0,0,0,0));
-                g.fillRoundRect(xPos+1, height/3+1, rect-1, height/3-1, 10, 10);
-            }
-        }
-        */
-        // draw large rectangles
+        // draw large rectangles for every chord
         int beginningIndex = 0;
         Chord currentChord = getChords()[beginningIndex];
         Chord compareChord;
         int drawStartingXCoordinate;
         int drawWidth;
-        // TODO: think about how chords that are null should be dealt with/included in the for-loop
         for(int i = 0; i < getLength(); i++){
             if(i < getLength()-1){
                 compareChord = getChords()[i+1];
             } else {
                 compareChord = new Chord("#", false);
             }
-            if(!Chord.chordsEqual(currentChord, compareChord)){
-                if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
-                    g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
-                } else { // rootNote == extraNote
-                    g.setColor(Color.LIGHT_GRAY);
+            if(currentChord != null){
+                if(!Chord.chordsEqual(currentChord, compareChord)){
+                    if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote())) != -1){ // rootNote == keyNote
+                        g.setColor(Main.keyNoteColors[getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(currentChord.getRootNote()))]);
+                    } else { // rootNote == extraNote
+                        g.setColor(Color.LIGHT_GRAY);
+                    }
+                    drawStartingXCoordinate = clear*(beginningIndex+1)+rect*(beginningIndex);
+                    drawWidth = clear*(i-beginningIndex)+rect*(i-beginningIndex+1);
+                    g.drawRoundRect(drawStartingXCoordinate, height/2-height/15, drawWidth, height/8, 10, 10);
+                    g.drawString(currentChord.getRootNote(), drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2),height/2+(g.getFontMetrics().getHeight()/4));
+
+                    // create black border around rootNote String
+                    // drawTextBorder((Graphics2D)g, currentChord.getRootNote(), Color.BLACK, drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2), height/2+(g.getFontMetrics().getHeight()/4));
+
+                    if(i < getLength()-1){
+                        beginningIndex = i+1;
+                        currentChord = getChords()[beginningIndex];
+                    }
                 }
-                drawStartingXCoordinate = clear*(beginningIndex+1)+rect*(beginningIndex);
-                drawWidth = clear*(i-beginningIndex)+rect*(i-beginningIndex+1);
-                g.drawRoundRect(drawStartingXCoordinate, height/2-height/15, drawWidth, height/8, 10, 10);
-                g.drawString(currentChord.getRootNote(), drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2),height/2+(g.getFontMetrics().getHeight()/4));
-
-                // create black border around rootNote String
-                // drawTextBorder((Graphics2D)g, currentChord.getRootNote(), Color.BLACK, drawStartingXCoordinate+(drawWidth/2)-(g.getFontMetrics().stringWidth(currentChord.getRootNote())/2), height/2+(g.getFontMetrics().getHeight()/4));
-
-                if(i < getLength()-1){
-                    beginningIndex = i+1;
-                    currentChord = getChords()[beginningIndex];
+            } else {
+                if(compareChord != null){
+                    if(i < getLength()-1){
+                        beginningIndex = i+1;
+                        currentChord = getChords()[beginningIndex];
+                    }
                 }
             }
         }

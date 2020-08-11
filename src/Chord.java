@@ -55,30 +55,37 @@ public class Chord {
     }
 
     public static boolean chordsEqual(Chord chord1, Chord chord2){
-        // compare root notes
-        if(!chord1.getRootNote().equals(chord2.getRootNote())){
+        // check whether both are not null
+        if((chord1 == null && chord2 != null) || (chord1 != null && chord2 == null)){
             return false;
-        }
-        // compare keyNoteArrays
-        for(int i = 0; i < chord1.getKeyChordNotes().length; i++){
-            if(chord1.getKeyChordNotes()[i] != null && chord2.getKeyChordNotes()[i] != null){
-                if(!chord1.getKeyChordNotes()[i].equals(chord2.getKeyChordNotes()[i])){
-                    return false;
-                }
-            } else if(!(chord1.getKeyChordNotes()[i] == null && chord2.getKeyChordNotes()[i] == null)){
+        } else if(chord1 == null && chord2 == null){
+            return true;
+        } else {
+            // compare root notes
+            if(!chord1.getRootNote().equals(chord2.getRootNote())){
                 return false;
             }
-        }
-        // compare extraNoteArrays
-        for(int i = 0; i < chord1.getExtraChordNotes().length; i++){
-            if(chord1.getExtraChordNotes()[i] != null && chord2.getExtraChordNotes()[i] != null){
-                if(!chord1.getExtraChordNotes()[i].equals(chord2.getExtraChordNotes()[i])){
+            // compare keyNoteArrays
+            for(int i = 0; i < chord1.getKeyChordNotes().length; i++){
+                if(chord1.getKeyChordNotes()[i] != null && chord2.getKeyChordNotes()[i] != null){
+                    if(!chord1.getKeyChordNotes()[i].equals(chord2.getKeyChordNotes()[i])){
+                        return false;
+                    }
+                } else if(!(chord1.getKeyChordNotes()[i] == null && chord2.getKeyChordNotes()[i] == null)){
                     return false;
                 }
-            } else if(!(chord1.getExtraChordNotes()[i] == null && chord2.getExtraChordNotes()[i] == null)){
-                return false;
             }
+            // compare extraNoteArrays
+            for(int i = 0; i < chord1.getExtraChordNotes().length; i++){
+                if(chord1.getExtraChordNotes()[i] != null && chord2.getExtraChordNotes()[i] != null){
+                    if(!chord1.getExtraChordNotes()[i].equals(chord2.getExtraChordNotes()[i])){
+                        return false;
+                    }
+                } else if(!(chord1.getExtraChordNotes()[i] == null && chord2.getExtraChordNotes()[i] == null)){
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
     }
 }

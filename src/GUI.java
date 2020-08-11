@@ -20,7 +20,7 @@ public class GUI{
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL, rootNoteL, keyNotesL, extraNotesL;
     private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, keyNoteCheckBox8, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
     private JCheckBox[] keyNotesCheckBoxesArray, extraNotesCheckBoxesArray;
-    private boolean rhythmEntered, chordsEntered, editChord;
+    private boolean rhythmEntered, chordsEntered, editChord, deleteChord;
     private boolean[] rhythm, bufferRhythm;
     private Chord[] chords, bufferChords;
     private Chord bufferOneChord;
@@ -50,7 +50,7 @@ public class GUI{
         frameBorderPanel = new JPanel();
         frameBorderPanel.setLayout(new BorderLayout());
         rhythmInputPanel = new RhythmPanel();
-        rhythmDisplayRhythmPanel = new RhythmPanel(); // TODO: use only this panel for rhythmInput and get rid of rhythmInputFrame & bufferRhythm
+        rhythmDisplayRhythmPanel = new RhythmPanel(); // (TODO: use only this panel for rhythmInput and get rid of rhythmInputFrame & bufferRhythm)
         rhythmDisplayRhythmPanel.setErase(true);
         userInputPanel = new JPanel();
         userInputPanel.setLayout(new GridLayout(1,2));
@@ -166,18 +166,8 @@ public class GUI{
         setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
         
         chordsInputPanel = new ChordsPanel(getCalcMelody());
-        chordsDisplayChordsPanel = new ChordsPanel(getCalcMelody()); // TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords
-        //chordsDisplayChordsPanel.setErase(true);
-
-        Chord cChord = new Chord("G (V)", true);
-        chordsInputPanel.setChords(new Chord[getLength()]);
-        chordsDisplayChordsPanel.setChords(new Chord[getLength()]);
-        for(int i = 0; i < getLength(); i++){
-            chordsInputPanel.getChords()[i] = cChord;
-            chordsDisplayChordsPanel.getChords()[i] = cChord;
-            getChords()[i] = cChord;
-        }
-        setChordsEntered(true);
+        chordsDisplayChordsPanel = new ChordsPanel(getCalcMelody()); // (TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords)
+        chordsDisplayChordsPanel.setErase(true);
 
         // GUI structuring
 
@@ -423,8 +413,13 @@ public class GUI{
             public void mousePressed(MouseEvent e){
                 if(e.getButton() == MouseEvent.BUTTON1){
                     setEditChord(false);
+                    setDeleteChord(false);
+                } else if(e.getButton() == MouseEvent.BUTTON2){
+                    setDeleteChord(true);
+                    setEditChord(false);
                 } else if(e.getButton() == MouseEvent.BUTTON3){
                     setEditChord(true);
+                    setDeleteChord(false);
                 }
                 setChordBeginningIndex(-1);
                 setChordEndingIndex(-1);
@@ -440,7 +435,7 @@ public class GUI{
 
             // ^
             // |
-            // TODO: add function to edit the selected area when dragged over with right mouse button & add function to delete chords with mouse wheel
+            // TODO: add function to edit the selected area when dragged over with right mouse button
             // |
             // v
 
@@ -475,6 +470,12 @@ public class GUI{
                             if(getBufferChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord
                                 setEditChord(false);
                             }
+                        }
+                    } else if(getDeleteChord()){
+                        openWindow = false;
+                        setBufferOneChord(null);
+                        for(ActionListener a : saveOneChordB.getActionListeners()){ // invoke ActionListener of saveOneChordB so that it saves the fact that chords have been deleted
+                            a.actionPerformed(new ActionEvent(saveOneChordB, ActionEvent.ACTION_PERFORMED, null));
                         }
                     }
                     if(openWindow){
@@ -849,6 +850,14 @@ public class GUI{
 
     public void setEditChord(boolean editChord) {
         this.editChord = editChord;
+    }
+
+    public boolean getDeleteChord(){
+        return this.deleteChord;
+    }
+
+    public void setDeleteChord(boolean deleteChord){
+        this.deleteChord = deleteChord;
     }
 
     public boolean[] getRhythm() {
