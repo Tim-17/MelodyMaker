@@ -504,11 +504,13 @@ public class GUI{
                 super.componentShown(e);
                 if(getEditChord()){
                     // TODO: fix error that when in this chord progression (F F C C) one wants to edit the first chord and decides not to do so the next chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
-                    // problem lies here
-                    chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
-                    setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
-                    updateCheckBoxes();
+                    // problem lies here:
+                    // ----------
+                    copyOnlyChordInformationAndNotReference(getBufferOneChord(), getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
+                    // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); -> this didn't change the following chord's rootNotes; it merely copied the selectionStatus of the selected chord to the following chord
                     updateCheckBoxSelectionStatus(getBufferOneChord());
+                    chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
+                    // ----------
                     // Output
                     System.out.println("oneChordInputFrame.setVisible: \nBufferChords (ComponentListener): ");
                     outputChords(getBufferChords());
@@ -1131,5 +1133,18 @@ public class GUI{
             }
         }
         return -1;
+    }
+
+    private void copyOnlyChordInformationAndNotReference(Chord chord1, Chord chord2){ // copies chord info from chord2 to chord1
+        // copy rootNote
+        chord1.setRootNote(chord2.getRootNote(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(chord2.getRootNote())) != -1);
+        // copy keyNotes
+        for(int i = 0; i < chord1.getKeyChordNotes().length; i++){
+            chord1.getKeyChordNotes()[i] = chord2.getKeyChordNotes()[i];
+        }
+        // copy extraNotes
+        for(int i = 0; i < chord1.getExtraChordNotes().length; i++){
+            chord1.getExtraChordNotes()[i] = chord2.getExtraChordNotes()[i];
+        }
     }
 }
