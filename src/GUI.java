@@ -684,7 +684,7 @@ public class GUI{
                     setRhythm(getMelody().getRhythm());
                 }
                 if(getChordsEntered()){
-                    // getMelody().createChordsMelody(getChords());
+                    getMelody().createChordsMelody(getChords());
                 } else {
                     getMelody().createMelody();
                 }

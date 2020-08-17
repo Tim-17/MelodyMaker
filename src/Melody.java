@@ -277,29 +277,63 @@ public class Melody {
 
     public void createMelody(){
         setMelody(new String[getLength()]);
-        double randDouble = 0;
+        double randDouble;
         for(int i = 0; i < getMelody().length; i++){
             if(getRhythm()[i]){
                 randDouble = Math.random();
-                if(randDouble < getiPercentage()){ // I
-                    getMelody()[i] = getKeyNotes()[0];
-                } else if(getiPercentage() < randDouble && randDouble < getiiPercentage()){ // II
-                    getMelody()[i] = getKeyNotes()[1];
-                } else if(getiiPercentage() < randDouble && randDouble < getiiiPercentage()){ // III
-                    getMelody()[i] = getKeyNotes()[2];
-                } else if(getiiiPercentage() < randDouble && randDouble < getivPercentage()){ // IV
-                    getMelody()[i] = getKeyNotes()[3];
-                }
-                else if(getivPercentage() < randDouble && randDouble < getvPercentage()){ // V
-                    getMelody()[i] = getKeyNotes()[4];
-                }
-                else if(getvPercentage() < randDouble && randDouble < getviPercentage()){ // VI
-                    getMelody()[i] = getKeyNotes()[5];
-                }
-                else { // VII
-                    getMelody()[i] = getKeyNotes()[6];
+                setMelodyNote(randDouble, i);
+            }
+        }
+    }
+
+    public void createChordsMelody(Chord[] chords){
+        setMelody(new String[getLength()]);
+        // declare variables outside of loop in order to save storage space
+        double randDouble;
+        String[] arpeggiateNotes;
+        double p;
+        // create melody
+        for(int i = 0; i < getMelody().length; i++){ // chordsArray should have the same length as the melodyArray
+            if(getRhythm()[i]){
+                randDouble = Math.random();
+                if(chords[i] == null){ // no chord entered -> normal melodyNote creation
+                    setMelodyNote(randDouble, i);
+                } else { // chord is entered
+                    if(chords[i].getArpeggiate()){ // arpeggiate chord
+                        arpeggiateNotes = extractPossibleArpeggiateNotes(chords[i].getKeyChordNotes(), chords[i].getExtraChordNotes());
+                        p = 1.0/arpeggiateNotes.length; // give each possible note an equal probability
+                        for(int j = 0; j < arpeggiateNotes.length; j++){
+                            if(p*j < randDouble && randDouble < p*(j+1)){ // compare this to setMelodyNote() -> it's the same thing just in a for loop because the equal probability allows it
+                                getMelody()[i] = arpeggiateNotes[j];
+                                break;
+                            }
+                        }
+                    } else { // no minor 2nd interval chord
+
+                    }
                 }
             }
+        }
+    }
+
+    private void setMelodyNote(double randDouble, int index){
+        if(randDouble < getiPercentage()){ // I
+            getMelody()[index] = getKeyNotes()[0];
+        } else if(getiPercentage() < randDouble && randDouble < getiiPercentage()){ // II
+            getMelody()[index] = getKeyNotes()[1];
+        } else if(getiiPercentage() < randDouble && randDouble < getiiiPercentage()){ // III
+            getMelody()[index] = getKeyNotes()[2];
+        } else if(getiiiPercentage() < randDouble && randDouble < getivPercentage()){ // IV
+            getMelody()[index] = getKeyNotes()[3];
+        }
+        else if(getivPercentage() < randDouble && randDouble < getvPercentage()){ // V
+            getMelody()[index] = getKeyNotes()[4];
+        }
+        else if(getvPercentage() < randDouble && randDouble < getviPercentage()){ // VI
+            getMelody()[index] = getKeyNotes()[5];
+        }
+        else { // VII
+            getMelody()[index] = getKeyNotes()[6];
         }
     }
 
@@ -311,5 +345,58 @@ public class Melody {
             index++;
         }
         return actualNoteName;
+    }
+
+    private String[] extractPossibleArpeggiateNotes(String[] keyChordNotes, String[] extraChordNotes){
+        // determine how many notes are possible (for the return array's length)
+        int keyLength = 0;
+        int extraLength = 0;
+        for(int i = 0; i < keyChordNotes.length; i++){
+            if(keyChordNotes[i] != null){
+                keyLength++;
+            }
+        }
+        for(int i = 0; i < extraChordNotes.length; i++){
+            if(extraChordNotes[i] != null){
+                extraLength++;
+            }
+        }
+        // fill possibleNotes array with notes
+        String[] possibleNotes = new String[keyLength + extraLength];
+        int index = 0;
+        for(int i = 0; i < keyChordNotes.length; i++){
+            if(keyChordNotes[i] != null){
+                possibleNotes[index] = keyChordNotes[i];
+                index++;
+            }
+        }
+        for(int i = 0; i < extraChordNotes.length; i++){
+            if(extraChordNotes[i] != null){
+                possibleNotes[index] = extraChordNotes[i];
+                index++;
+            }
+        }
+        return possibleNotes;
+    }
+
+    private String[] extractPossibleNoMinor2ndIntervalsNotes(String[] keyChordNotes, String[] extraChordNotes){
+        String[] possibleArpeggiateNotes = extractPossibleArpeggiateNotes(keyChordNotes, extraChordNotes);
+        return possibleArpeggiateNotes; // TODO: return a new array that contains all possible notes
+    }
+
+    private int allNoteDistance(String note1, String note2){
+        int note1Index = findAllNotesIndex(note1);
+        int note2Index = findAllNotesIndex(note2);
+        int indexDifference;
+        if(note2Index > note1Index){
+            indexDifference = note2Index - note1Index;
+        } else {
+            indexDifference = note1Index - note2Index;
+        }
+        if(indexDifference <= 6){
+            return indexDifference;
+        } else {
+            return getAllNotes().length - indexDifference;
+        }
     }
 }
