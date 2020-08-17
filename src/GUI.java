@@ -13,10 +13,10 @@ public class GUI{
     private JPanel frameBorderPanel, userInputPanel, extraInputPanel, keyChoicePanel, rhythmDisplayPanel, rhythmFramePanel, chordsDisplayPanel, chordsFramePanel, oneChordPanel, oneChordContentPanel, keyNotesCheckBoxPanel, extraNotesCheckBoxPanel, lengthAndMelodyPanel, lengthParametersLabelsPanel, lengthParametersComboBoxesPanel, melodyOutputPanel;
     private RhythmPanel rhythmInputPanel, rhythmDisplayRhythmPanel;
     private ChordsPanel chordsInputPanel, chordsDisplayChordsPanel;
-    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB;
+    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB, arpeggiateCB;
     private MutableComboBoxModel subdivModel, chordRootNoteModel;
     private ComboBoxColorRenderer comboBoxColorRenderer;
-    private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChords, createMelodyB, playMelodyB;
+    private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChordsB, createMelodyB, playMelodyB;
     private JLabel keyL, melodyL, timeSigL, numberMeasuresL, smallestSubdivL, rootNoteL, keyNotesL, extraNotesL;
     private JCheckBox keyNoteCheckBox2, keyNoteCheckBox3, keyNoteCheckBox4, keyNoteCheckBox5, keyNoteCheckBox6, keyNoteCheckBox7, keyNoteCheckBox8, extraNoteCheckBox1, extraNoteCheckBox2, extraNoteCheckBox3, extraNoteCheckBox4, extraNoteCheckBox5;
     private JCheckBox[] keyNotesCheckBoxesArray, extraNotesCheckBoxesArray;
@@ -102,6 +102,7 @@ public class GUI{
         subdivModel.addElement(thirtysecond);
         smallestSubdivCB = new JComboBox(subdivModel);
         smallestSubdivCB.setSelectedIndex(4);
+        arpeggiateCB = new JComboBox(new String[]{"No minor 2nd intervals", "Arpeggiate"});
         enterRhythmB = new JButton("Enter rhythm");
         saveRhythmB = new JButton("Save rhythm");
         deleteRhythm = new JButton("Delete rhythm");
@@ -109,8 +110,8 @@ public class GUI{
         enterChordsB = new JButton("Enter chords"); // TODO: Add chord only creation function
         saveChordsB = new JButton("Save chords");
         saveOneChordB = new JButton("Save chord");
-        deleteChords = new JButton("Delete chords");
-        deleteChords.setVisible(false);
+        deleteChordsB = new JButton("Delete chords");
+        deleteChordsB.setVisible(false);
         createMelodyB = new JButton("Create melody");
         playMelodyB = new JButton("Play melody");
         keyL = new JLabel("Key: ");
@@ -225,6 +226,7 @@ public class GUI{
         oneChordInput.setVisible(false);
 
         oneChordPanel.add(oneChordContentPanel, BorderLayout.CENTER);
+        oneChordPanel.add(arpeggiateCB, BorderLayout.EAST); // TODO: make this look nicer
         oneChordPanel.add(saveOneChordB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         oneChordContentPanel.add(rootNoteL);
@@ -252,7 +254,7 @@ public class GUI{
         rhythmDisplayPanel.add(deleteRhythm, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         chordsDisplayPanel.add(chordsDisplayChordsPanel, BorderLayout.CENTER);
-        chordsDisplayPanel.add(deleteChords, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
+        chordsDisplayPanel.add(deleteChordsB, BorderLayout.SOUTH); // TODO: add FlowLayout.RIGHT
 
         lengthAndMelodyPanel.add(lengthParametersLabelsPanel);
         lengthAndMelodyPanel.add(lengthParametersComboBoxesPanel);
@@ -509,6 +511,7 @@ public class GUI{
                     copyOnlyChordInformationAndNotReference(getBufferOneChord(), getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                     // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); -> this didn't change the following chord's rootNotes; it merely copied the selectionStatus of the selected chord to the following chord
                     updateCheckBoxSelectionStatus(getBufferOneChord());
+                    updateArpeggiateCBSelectedIndex(); // TODO: check if this works afer the main chord bug is fixed
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
                     // ----------
                     // Output
@@ -519,6 +522,7 @@ public class GUI{
                     setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                     chordRootNoteCB.setSelectedIndex(0);
+                    arpeggiateCB.setSelectedIndex(0);
                 }
             }
 
@@ -592,6 +596,13 @@ public class GUI{
             });
         }
 
+        arpeggiateCB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                getBufferOneChord().setArpeggiate(arpeggiateCB.getSelectedIndex() == 1);
+            }
+        });
+
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
@@ -621,14 +632,14 @@ public class GUI{
                 for(Chord chord : getChords()){
                     if(chord != null){
                         setChordsEntered(true);
-                        deleteChords.setVisible(true);
+                        deleteChordsB.setVisible(true);
                         enterChordsB.setText("Edit chords");
                         chordsDisplayChordsPanel.setErase(false);
                         break;
                     }
                 }
                 if(!getChordsEntered()){
-                    deleteChords.setVisible(false);
+                    deleteChordsB.setVisible(false);
                     enterChordsB.setText("Enter chords");
                     chordsDisplayChordsPanel.setErase(true);
                 }
@@ -639,7 +650,7 @@ public class GUI{
             }
         });
 
-        deleteChords.addActionListener(new ActionListener(){ // TODO: fix bug that once deleteChords was pressed the first keyCheckBox is selected
+        deleteChordsB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 setChords(new Chord[getLength()]);
@@ -650,7 +661,7 @@ public class GUI{
                 chordsDisplayChordsPanel.setErase(true);
                 chordsDisplayChordsPanel.repaint();
                 setChordsEntered(false);
-                deleteChords.setVisible(false);
+                deleteChordsB.setVisible(false);
                 enterChordsB.setText("Enter chords");
             }
         });
@@ -1089,6 +1100,14 @@ public class GUI{
         }
     }
 
+    private void updateArpeggiateCBSelectedIndex(){
+        if(getBufferOneChord().getArpeggiate()){
+            arpeggiateCB.setSelectedIndex(1);
+        } else {
+            arpeggiateCB.setSelectedIndex(0);
+        }
+    }
+
     private static String toRoman(int number) {
         return String.valueOf(new char[number]).replace('\0', 'I')
                 .replace("IIIII", "V")
@@ -1110,6 +1129,7 @@ public class GUI{
             System.out.println(i + ": ");
             if(chords[i] != null){
                 System.out.println("Rootnote: " + chords[i].getRootNote());
+                System.out.println("Arpeggiate: " + chords[i].getArpeggiate());
                 System.out.println("KeyChordNotes: ");
                 for(int j = 0; j < chords[i].getKeyChordNotes().length; j++){
                     System.out.print(chords[i].getKeyChordNotes()[j] + ", ");
@@ -1146,5 +1166,7 @@ public class GUI{
         for(int i = 0; i < chord1.getExtraChordNotes().length; i++){
             chord1.getExtraChordNotes()[i] = chord2.getExtraChordNotes()[i];
         }
+        // copy arpeggiate
+        chord1.setArpeggiate(chord2.getArpeggiate());
     }
 }

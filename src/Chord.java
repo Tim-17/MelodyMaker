@@ -3,6 +3,7 @@ public class Chord {
     private String rootNote;
     private String[] keyChordNotes;
     private String[] extraChordNotes;
+    private boolean arpeggiate;
 
     public Chord(String rootNote, boolean key){
         setKeyChordNotes(new String[7]);
@@ -40,6 +41,14 @@ public class Chord {
 
     public void setExtraChordNotes(String[] extraChordNotes) {
         this.extraChordNotes = extraChordNotes;
+    }
+
+    public boolean getArpeggiate(){
+        return this.arpeggiate;
+    }
+
+    public void setArpeggiate(boolean arpeggiate){
+        this.arpeggiate = arpeggiate;
     }
 
 
@@ -84,6 +93,10 @@ public class Chord {
                 } else if(!(chord1.getExtraChordNotes()[i] == null && chord2.getExtraChordNotes()[i] == null)){
                     return false;
                 }
+            }
+            // compare arpeggiate
+            if(chord1.getArpeggiate() != chord2.getArpeggiate()){
+                return false;
             }
             return true;
         }
