@@ -54,15 +54,6 @@ public class Chord {
 
     // Actual methods
 
-    public boolean extraNotesEntered(){
-        for(int i = 0; i < getExtraChordNotes().length; i++){
-            if(getExtraChordNotes()[i] != null){
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean chordsEqual(Chord chord1, Chord chord2){
         // check whether both are not null
         if((chord1 == null && chord2 != null) || (chord1 != null && chord2 == null)){

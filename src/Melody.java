@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Melody {
 
     private boolean[] rhythm;
@@ -291,6 +294,7 @@ public class Melody {
         // declare variables outside of loop in order to save storage space
         double randDouble;
         String[] arpeggiateNotes;
+        String[] noMinor2ndIntervalsNotes;
         double p;
         // create melody
         for(int i = 0; i < getMelody().length; i++){ // chordsArray should have the same length as the melodyArray
@@ -303,13 +307,20 @@ public class Melody {
                         arpeggiateNotes = extractPossibleArpeggiateNotes(chords[i].getKeyChordNotes(), chords[i].getExtraChordNotes());
                         p = 1.0/arpeggiateNotes.length; // give each possible note an equal probability
                         for(int j = 0; j < arpeggiateNotes.length; j++){
-                            if(p*j < randDouble && randDouble < p*(j+1)){ // compare this to setMelodyNote() -> it's the same thing just in a for loop because the equal probability allows it
+                            if(p*j < randDouble && randDouble < p*(j+1)){ // in order to understand this, compare it to the setMelodyNote() method -> it's the same thing just in a for loop because the equal probability allows it
                                 getMelody()[i] = arpeggiateNotes[j];
                                 break;
                             }
                         }
                     } else { // no minor 2nd interval chord
-
+                        noMinor2ndIntervalsNotes = extractPossibleNoMinor2ndIntervalsNotes(chords[i].getKeyChordNotes(), chords[i].getExtraChordNotes(), chords[i]);
+                        p = 1.0/noMinor2ndIntervalsNotes.length; // give each possible note an equal probability
+                        for(int j = 0; j < noMinor2ndIntervalsNotes.length; j++){
+                            if(p*j < randDouble && randDouble < p*(j+1)){ // in order to understand this, compare it to the setMelodyNote() method -> it's the same thing just in a for loop because the equal probability allows it
+                                getMelody()[i] = noMinor2ndIntervalsNotes[j];
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -348,55 +359,86 @@ public class Melody {
     }
 
     private String[] extractPossibleArpeggiateNotes(String[] keyChordNotes, String[] extraChordNotes){
-        // determine how many notes are possible (for the return array's length)
-        int keyLength = 0;
-        int extraLength = 0;
-        for(int i = 0; i < keyChordNotes.length; i++){
-            if(keyChordNotes[i] != null){
-                keyLength++;
+        ArrayList<String> possibleNotes = new ArrayList<>();
+        for(String note : keyChordNotes){
+            if(note != null){
+                possibleNotes.add(note);
             }
         }
-        for(int i = 0; i < extraChordNotes.length; i++){
-            if(extraChordNotes[i] != null){
-                extraLength++;
+        for(String note : extraChordNotes){
+            if(note != null){
+                possibleNotes.add(note);
             }
         }
-        // fill possibleNotes array with notes
-        String[] possibleNotes = new String[keyLength + extraLength];
-        int index = 0;
-        for(int i = 0; i < keyChordNotes.length; i++){
-            if(keyChordNotes[i] != null){
-                possibleNotes[index] = keyChordNotes[i];
-                index++;
-            }
-        }
-        for(int i = 0; i < extraChordNotes.length; i++){
-            if(extraChordNotes[i] != null){
-                possibleNotes[index] = extraChordNotes[i];
-                index++;
-            }
-        }
-        return possibleNotes;
+        return (String[])possibleNotes.toArray();
     }
 
-    private String[] extractPossibleNoMinor2ndIntervalsNotes(String[] keyChordNotes, String[] extraChordNotes){
-        String[] possibleArpeggiateNotes = extractPossibleArpeggiateNotes(keyChordNotes, extraChordNotes);
-        return possibleArpeggiateNotes; // TODO: return a new array that contains all possible notes
+    private String[] extractPossibleNoMinor2ndIntervalsNotes(String[] keyChordNotes, String[] extraChordNotes, Chord chord){
+        ArrayList<Integer> noteIndicesArrayList = new ArrayList<>(); // store the indices of the chord notes
+        int indexBuffer; // this variable is declared here so that it won't be declared in every iteration of the for loop (to save storage space)
+
+        // store all chord notes in an array like getAllNotes() and order them by placing them at their respective index -> one wants to be able to compare allNotesArray with getAllNotes()
+        String[] allNotesArray = new String[12];
+        for(String keyChordNote : keyChordNotes){
+            if(keyChordNote != null){
+                indexBuffer = findAllNotesIndex(keyChordNote); // this variable shortens the runtime by 'preventing' the findAllNotesIndex() method from running twice
+                allNotesArray[indexBuffer] = keyChordNote;
+                noteIndicesArrayList.add(indexBuffer);
+            }
+        }
+        for(String extraChordNote : extraChordNotes){
+            if(extraChordNote != null){
+                indexBuffer = findAllNotesIndex(extraChordNote); // this variable shortens the runtime by 'preventing' the findAllNotesIndex() method from running twice
+                allNotesArray[indexBuffer] = extraChordNote;
+                noteIndicesArrayList.add(indexBuffer);
+            }
+        }
+        Collections.sort(noteIndicesArrayList);
+        // TODO: only use the noteIndicesArrayList -> the noteIndicesArray is, in fact, unnecessary
+        int[] noteIndicesArray = convertToArray(noteIndicesArrayList);
+
+        // find out which keyNotes could be added to the allNotesArray because they don't have a minor 2nd interval with any of the chord notes
+        for(int i = 0; i < noteIndicesArray.length-1; i++){
+            // the "if(noteIndicesArray[i+1] - noteIndicesArray[i] > 3)" part could be removed because the for-loop already indirectly includes this if-statement -> it's still in there because it makes the method easier to understand (I hope)
+            if(noteIndicesArray[i+1] - noteIndicesArray[i] > 3){ // check whether the 'space' between two notes allows for a note (in between those notes) that doesn't have a minor 2nd interval with both of the surrounding notes
+                for(int j = noteIndicesArray[i]+2; j <= noteIndicesArray[i+1]-2; j++){ // check whether any of the notes in between the two surrounding notes (that doesn't have a minor 2nd interval with the surrounding notes -> hence the +2/-2) is a keyNote and could therefore be added to the allNotesArray
+                    if(findKeyNoteIndex(getAllNotes()[j]) != -1){ // note == keyNote
+                        allNotesArray[j] = getAllNotes()[j];
+                    }
+                }
+            }
+        }
+        // the "if(getAllNotes().length - (noteIndicesArray[noteIndicesArray.length-1] - noteIndicesArray[0]) > 3)" part could be removed because the for-loop already indirectly includes this if-statement -> it's still in there because it makes the method easier to understand (I hope)
+        if(getAllNotes().length - (noteIndicesArray[noteIndicesArray.length-1] - noteIndicesArray[0]) > 3){ // check the space between the last and the first note in the array -> this always starts somewhere "at the end" of the allNotesArray and ends somewhere "at the beginning" -> hence the getAllNotes().length - ()
+            // check the "end part" of the array
+            for(int i = noteIndicesArray[noteIndicesArray.length-1]+2; i < getAllNotes().length; i++){ // check whether any of the notes in between the two surrounding notes (that doesn't have a minor 2nd interval with the surrounding notes -> hence the +2/-2) is a keyNote and could therefore be added to the allNotesArray
+                if(findKeyNoteIndex(getAllNotes()[i]) != -1){ // note == keyNote
+                    allNotesArray[i] = getAllNotes()[i];
+                }
+            }
+            // check the "beginning part" of the array
+            for(int i = 0; i <= noteIndicesArray[0]-2; i++){ // check whether any of the notes in between the two surrounding notes (that doesn't have a minor 2nd interval with the surrounding notes -> hence the +2/-2) is a keyNote and could therefore be added to the allNotesArray
+                if(findKeyNoteIndex(getAllNotes()[i]) != -1){ // note == keyNote
+                    allNotesArray[i] = getAllNotes()[i];
+                }
+            }
+        }
+
+        // remove notes with null value from allNotesArray
+        ArrayList<String> possibleNotes = new ArrayList<>();
+        for(String note : allNotesArray){
+            if(note != null){
+                possibleNotes.add(note);
+            }
+        }
+        return (String[])possibleNotes.toArray();
     }
 
-    private int allNoteDistance(String note1, String note2){
-        int note1Index = findAllNotesIndex(note1);
-        int note2Index = findAllNotesIndex(note2);
-        int indexDifference;
-        if(note2Index > note1Index){
-            indexDifference = note2Index - note1Index;
-        } else {
-            indexDifference = note1Index - note2Index;
+    private int[] convertToArray(ArrayList<Integer> arrayList){
+        int[] array = new int[arrayList.size()];
+        for (int i = 0; i < array.length; i++){
+            array[i] = arrayList.get(i);
         }
-        if(indexDifference <= 6){
-            return indexDifference;
-        } else {
-            return getAllNotes().length - indexDifference;
-        }
+        return array;
     }
 }
