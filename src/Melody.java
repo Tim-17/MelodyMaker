@@ -305,7 +305,6 @@ public class Melody {
                 } else { // chord is entered
                     if(chords[i].getArpeggiate()){ // arpeggiate chord
                         arpeggiateNotes = extractPossibleArpeggiateNotes(chords[i].getKeyChordNotes(), chords[i].getExtraChordNotes());
-                        outputArray("ArpeggiateNotes: ", arpeggiateNotes);
                         p = 1.0/arpeggiateNotes.length; // give each possible note an equal probability
                         for(int j = 0; j < arpeggiateNotes.length; j++){
                             if(p*j < randDouble && randDouble < p*(j+1)){ // in order to understand this, compare it to the setMelodyNote() method -> it's the same thing just in a for loop because the equal probability allows it
@@ -315,7 +314,6 @@ public class Melody {
                         }
                     } else { // no minor 2nd interval chord
                         noMinor2ndIntervalsNotes = extractPossibleNoMinor2ndIntervalsNotes(chords[i].getKeyChordNotes(), chords[i].getExtraChordNotes(), chords[i]);
-                        outputArray("NoMinor2ndIntervalsNotes: ", noMinor2ndIntervalsNotes);
                         p = 1.0/noMinor2ndIntervalsNotes.length; // give each possible note an equal probability
                         for(int j = 0; j < noMinor2ndIntervalsNotes.length; j++){
                             if(p*j < randDouble && randDouble < p*(j+1)){ // in order to understand this, compare it to the setMelodyNote() method -> it's the same thing just in a for loop because the equal probability allows it
@@ -440,13 +438,5 @@ public class Melody {
             array[i] = arrayList.get(i);
         }
         return array;
-    }
-
-    private void outputArray(String message, String[] array){
-        System.out.println(message);
-        for(int i = 0; i < array.length; i++){
-            System.out.print("[" + array[i] + "] ");
-        }
-        System.out.println("");
     }
 }

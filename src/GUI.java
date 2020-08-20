@@ -10,9 +10,10 @@ public class GUI{
     private Melody melody, calcMelody;
     private MusicPlayer musicPlayer;
     private JFrame frame, rhythmInput, chordsInput, oneChordInput;
-    private JPanel frameBorderPanel, userInputPanel, extraInputPanel, keyChoicePanel, rhythmDisplayPanel, rhythmFramePanel, chordsDisplayPanel, chordsFramePanel, oneChordPanel, oneChordContentPanel, keyNotesCheckBoxPanel, extraNotesCheckBoxPanel, lengthAndMelodyPanel, lengthParametersLabelsPanel, lengthParametersComboBoxesPanel, melodyOutputPanel;
+    private JPanel frameBorderPanel, userInputPanel, extraInputPanel, keyChoicePanel, rhythmDisplayPanel, rhythmFramePanel, chordsDisplayPanel, chordsFramePanel, oneChordPanel, oneChordContentPanel, keyNotesCheckBoxPanel, extraNotesCheckBoxPanel, lengthAndMelodyPanel, lengthParametersLabelsPanel, lengthParametersComboBoxesPanel;
     private RhythmPanel rhythmInputPanel, rhythmDisplayRhythmPanel;
     private ChordsPanel chordsInputPanel, chordsDisplayChordsPanel;
+    private MelodyPanel melodyDisplayMelodyPanel;
     private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB, arpeggiateCB;
     private MutableComboBoxModel subdivModel, chordRootNoteModel;
     private ComboBoxColorRenderer comboBoxColorRenderer;
@@ -83,7 +84,7 @@ public class GUI{
         lengthParametersLabelsPanel.setLayout(new GridLayout(1,3));
         lengthParametersComboBoxesPanel = new JPanel();
         lengthParametersComboBoxesPanel.setLayout(new GridLayout(1,3));
-        melodyOutputPanel = new JPanel();
+        melodyDisplayMelodyPanel = new MelodyPanel();
         keyCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
         keyCB.setSelectedIndex(0);
         keyCB.setMaximumRowCount(12);
@@ -261,7 +262,7 @@ public class GUI{
         lengthAndMelodyPanel.add(new JPanel());
         lengthAndMelodyPanel.add(new JPanel());
         lengthAndMelodyPanel.add(melodyL);
-        lengthAndMelodyPanel.add(melodyOutputPanel);
+        lengthAndMelodyPanel.add(melodyDisplayMelodyPanel);
         lengthAndMelodyPanel.add(playMelodyB);
 
         lengthParametersLabelsPanel.add(timeSigL);
@@ -626,6 +627,7 @@ public class GUI{
             public void actionPerformed(ActionEvent e){
                 setChords(getBufferChords());
                 chordsDisplayChordsPanel.setChords(getChords());
+                melodyDisplayMelodyPanel.setChords(getChords());
                 chordsInput.setVisible(false);
                 oneChordInput.setVisible(false);
                 setChordsEntered(false);
@@ -687,6 +689,9 @@ public class GUI{
                 } else {
                     getMelody().createMelody();
                 }
+                melodyDisplayMelodyPanel.setMelody(getMelody());
+                melodyDisplayMelodyPanel.setErase(false);
+                melodyDisplayMelodyPanel.repaint();
                 for(int i = 1; i <= getLength(); i++){
                     System.out.print("[" + getMelody().getMelody()[i-1] + "] ");
                 }
@@ -961,6 +966,7 @@ public class GUI{
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
         setCalcMelody(new Melody(getLength()));
+        setMelody(new Melody(getLength()));
         comboBoxColorRenderer.setCalcMelody(getCalcMelody());
         chordsInputPanel.setCalcMelody(getCalcMelody());
         chordsDisplayChordsPanel.setCalcMelody(getCalcMelody());
@@ -983,6 +989,9 @@ public class GUI{
         chordsDisplayChordsPanel.setErase(true);
         chordsDisplayChordsPanel.repaint();
         oneChordInput.setVisible(false); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
+        melodyDisplayMelodyPanel.setLength(getLength());
+        melodyDisplayMelodyPanel.setErase(true);
+        melodyDisplayMelodyPanel.repaint();
     }
 
     private void updateCalcMelodyNotes(){

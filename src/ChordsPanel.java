@@ -51,7 +51,7 @@ public class ChordsPanel extends JPanel{
             if(i < getLength()-1){
                 compareChord = getChords()[i+1];
             } else {
-                compareChord = new Chord("#", false);
+                compareChord = new Chord("#", false); // create a compareChord that will always be different from the currentChord -> needed in order to include the last beat
             }
             if(currentChord != null){
                 if(!Chord.chordsEqual(currentChord, compareChord)){
