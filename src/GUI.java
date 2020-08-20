@@ -966,7 +966,7 @@ public class GUI{
             setLength((String)timeSigCB.getSelectedItem(), numberMeasuresCB.getSelectedIndex()+1, 32);
         }
         setCalcMelody(new Melody(getLength()));
-        setMelody(new Melody(getLength()));
+        setMelody(null);
         comboBoxColorRenderer.setCalcMelody(getCalcMelody());
         chordsInputPanel.setCalcMelody(getCalcMelody());
         chordsDisplayChordsPanel.setCalcMelody(getCalcMelody());
@@ -975,19 +975,17 @@ public class GUI{
         for(ActionListener a : saveRhythmB.getActionListeners()){
             a.actionPerformed(new ActionEvent(saveRhythmB, ActionEvent.ACTION_PERFORMED, null)); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
         }
-        setBufferRhythm(new boolean[getLength()]);
         setChords(new Chord[getLength()]);
-        chordsInput.setVisible(false); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
+        setBufferChords(new Chord[getLength()]);
+        for(ActionListener a : saveChordsB.getActionListeners()){
+            a.actionPerformed(new ActionEvent(saveChordsB, ActionEvent.ACTION_PERFORMED, null)); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
+        }
         rhythmInputPanel.setLength(getLength());
         rhythmInputPanel.repaint();
         rhythmDisplayRhythmPanel.setLength(getLength());
-        rhythmDisplayRhythmPanel.setErase(true);
-        rhythmDisplayRhythmPanel.repaint();
         chordsInputPanel.setLength(getLength());
         chordsInputPanel.repaint();
         chordsDisplayChordsPanel.setLength(getLength());
-        chordsDisplayChordsPanel.setErase(true);
-        chordsDisplayChordsPanel.repaint();
         oneChordInput.setVisible(false); // TODO: potentially reopen the windows that were opened before the length was changed for improved workflow
         melodyDisplayMelodyPanel.setLength(getLength());
         melodyDisplayMelodyPanel.setErase(true);
