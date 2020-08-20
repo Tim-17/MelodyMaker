@@ -680,8 +680,7 @@ public class GUI{
                 if(getRhythmEntered()){
                     getMelody().setRhythm(getRhythm());
                 } else {
-                    getMelody().createRhythm(); // TODO: fix that after the Melody created a rhythm this rhythm is also stored in the GUI rhythm (even though the user never entered a rhythm)
-                    setRhythm(getMelody().getRhythm());
+                    getMelody().createRhythm();
                 }
                 if(getChordsEntered()){
                     getMelody().createChordsMelody(getChords());
@@ -700,7 +699,7 @@ public class GUI{
             public void actionPerformed(ActionEvent e){
                 if(getMelody() != null){
                     for(int i = 0; i < getLength(); i++){
-                        if(getRhythm()[i]){
+                        if(getMelody().getRhythm()[i]){
                             if(getMelody().findKeyNoteIndex(getMelody().getMelody()[i]) < getMelody().getChangeIndex()){
                                 getMusicPlayer().playNote(getMusicPlayer().getNotes().get(getMelody().getMelody()[i]), 500);
                             } else {

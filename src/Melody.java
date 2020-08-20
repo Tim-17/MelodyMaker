@@ -189,7 +189,7 @@ public class Melody {
 
     public void createRhythm(){
         setRhythm(new boolean[getLength()]);
-        for(int i = 0; i < getLength(); i++){ // TODO: Optional - Add higher chance for first beat to be a note
+        for(int i = 0; i < getLength(); i++){
             if(Math.random() < getPausePercentage()){
                 getRhythm()[i] = false;
                 setPausePercentage(getPausePercentage() * 0.9); // "notePercentage" increases (pausePercentage decreases) the longer the pause has been
