@@ -506,13 +506,15 @@ public class GUI{
             public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 if(getEditChord()){
-                    // TODO: fix error that when in this chord progression (F F C C) one wants to edit the first chord and decides not to do so the next chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
+                    // TODO: fix error that when one wants to edit a chord and decides not to do so the last chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
+                    // TODO: fix error that when an edited chord is saved, the reference of the last chord is changed to the reference of the edited chord
+                    // TODO: fix error that editing chords immediately writes them to getChords() and not getBufferChords()
                     // problem lies here:
                     // ----------
                     copyOnlyChordInformationAndNotReference(getBufferOneChord(), getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                     // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); -> this didn't change the following chord's rootNotes; it merely copied the selectionStatus of the selected chord to the following chord
                     updateCheckBoxSelectionStatus(getBufferOneChord());
-                    updateArpeggiateCBSelectedIndex(); // TODO: check if this works afer the main chord bug is fixed
+                    updateArpeggiateCBSelectedIndex(); // TODO: check if this works after the main chord bug is fixed
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
                     // ----------
                     // Output
