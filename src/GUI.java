@@ -511,8 +511,8 @@ public class GUI{
                     // TODO: fix error that editing chords immediately writes them to getChords() and not getBufferChords()
                     // problem lies here:
                     // ----------
-                    copyOnlyChordInformationAndNotReference(getBufferOneChord(), getBufferChords()[getChordBeginningIndex()]); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
-                    // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); -> this didn't change the following chord's rootNotes; it merely copied the selectionStatus of the selected chord to the following chord
+                    setBufferOneChord(copyOnlyChordInformationAndNotReference(getBufferChords()[getChordBeginningIndex()])); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
+                    // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // this fixed all the problems but one: if one wants to change only a certain number of beats of a chord's length, this changes all the beats of that chord (every beat has the same reference, hence all of them are changed)
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                     updateArpeggiateCBSelectedIndex(); // TODO: check if this works after the main chord bug is fixed
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
@@ -1163,18 +1163,19 @@ public class GUI{
         return -1;
     }
 
-    private void copyOnlyChordInformationAndNotReference(Chord chord1, Chord chord2){ // copies chord info from chord2 to chord1
+    private Chord copyOnlyChordInformationAndNotReference(Chord chord){ // returns new Chord with all the information of the input chord
         // copy rootNote
-        chord1.setRootNote(chord2.getRootNote(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(chord2.getRootNote())) != -1);
+        Chord newChord = new Chord(chord.getRootNote(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName(chord.getRootNote())) != -1);
         // copy keyNotes
-        for(int i = 0; i < chord1.getKeyChordNotes().length; i++){
-            chord1.getKeyChordNotes()[i] = chord2.getKeyChordNotes()[i];
+        for(int i = 0; i < newChord.getKeyChordNotes().length; i++){
+            newChord.getKeyChordNotes()[i] = chord.getKeyChordNotes()[i];
         }
         // copy extraNotes
-        for(int i = 0; i < chord1.getExtraChordNotes().length; i++){
-            chord1.getExtraChordNotes()[i] = chord2.getExtraChordNotes()[i];
+        for(int i = 0; i < newChord.getExtraChordNotes().length; i++){
+            newChord.getExtraChordNotes()[i] = chord.getExtraChordNotes()[i];
         }
         // copy arpeggiate
-        chord1.setArpeggiate(chord2.getArpeggiate());
+        newChord.setArpeggiate(chord.getArpeggiate());
+        return newChord;
     }
 }
