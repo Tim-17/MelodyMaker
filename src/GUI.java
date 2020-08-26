@@ -686,10 +686,6 @@ public class GUI{
                 melodyDisplayMelodyPanel.setMelody(getMelody());
                 melodyDisplayMelodyPanel.setErase(false);
                 melodyDisplayMelodyPanel.repaint();
-                for(int i = 1; i <= getLength(); i++){
-                    System.out.print("[" + getMelody().getMelody()[i-1] + "] ");
-                }
-                System.out.println("");
             }
         });
 
