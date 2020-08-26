@@ -506,21 +506,13 @@ public class GUI{
             public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 if(getEditChord()){
-                    // TODO: fix error that when one wants to edit a chord and decides not to do so the last chord changes note names -> the bufferChord is already with a different root note (and therefore different chord notes while the selected notes stay the same -> only their name changes (their root is now the root of the previous chord)) while the chordPanelChord is still with the actual root note
-                    // TODO: fix error that when an edited chord is saved, the reference of the last chord is changed to the reference of the edited chord
-                    // TODO: fix error that editing chords immediately writes them to getChords() and not getBufferChords()
-                    // problem lies here:
-                    // ----------
                     setBufferOneChord(copyOnlyChordInformationAndNotReference(getBufferChords()[getChordBeginningIndex()])); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
-                    // setBufferOneChord(getBufferChords()[getChordBeginningIndex()]); // this fixed all the problems but one: if one wants to change only a certain number of beats of a chord's length, this changes all the beats of that chord (every beat has the same reference, hence all of them are changed)
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                     updateArpeggiateCBSelectedIndex(); // TODO: check if this works after the main chord bug is fixed
-                    chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferChords()[getChordBeginningIndex()].getRootNote()));
-                    // ----------
+                    chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
                     // Output
                     System.out.println("oneChordInputFrame.setVisible: \nBufferChords (ComponentListener): ");
                     outputChords(getBufferChords());
-                    System.out.println("getBufferChords()[getChordBeginningIndex()].getRootNote(): " + getBufferChords()[getChordBeginningIndex()].getRootNote());
                 } else {
                     setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
