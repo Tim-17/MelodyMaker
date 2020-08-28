@@ -4,11 +4,13 @@ public class Chord {
     private String[] keyChordNotes;
     private String[] extraChordNotes;
     private boolean arpeggiate;
+    private int chordRootNoteCBIndex;
 
     public Chord(String rootNote, boolean key){
         setKeyChordNotes(new String[7]);
         setExtraChordNotes(new String[5]);
         setRootNote(rootNote, key);
+        setChordRootNoteCBIndex(-1);
     }
 
 
@@ -49,6 +51,13 @@ public class Chord {
 
     public void setArpeggiate(boolean arpeggiate){
         this.arpeggiate = arpeggiate;
+    }
+    public int getChordRootNoteCBIndex(){
+        return this.chordRootNoteCBIndex;
+    }
+
+    public void setChordRootNoteCBIndex(int chordRootNoteCBIndex){
+        this.chordRootNoteCBIndex = chordRootNoteCBIndex;
     }
 
 

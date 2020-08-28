@@ -484,9 +484,6 @@ public class GUI{
                     if(openWindow){
                         oneChordInput.setVisible(true);
                     }
-                    // Output
-                    System.out.println("mouseReleased: \nBufferChords (ComponentListener): ");
-                    outputChords(getBufferChords());
                 }
             }
 
@@ -508,11 +505,8 @@ public class GUI{
                 if(getEditChord()){
                     setBufferOneChord(copyOnlyChordInformationAndNotReference(getBufferChords()[getChordBeginningIndex()])); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
                     updateCheckBoxSelectionStatus(getBufferOneChord());
-                    updateArpeggiateCBSelectedIndex(); // TODO: check if this works after the main chord bug is fixed
+                    updateArpeggiateCBSelectedIndex();
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
-                    // Output
-                    System.out.println("oneChordInputFrame.setVisible: \nBufferChords (ComponentListener): ");
-                    outputChords(getBufferChords());
                 } else {
                     setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
@@ -601,18 +595,13 @@ public class GUI{
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                // (TODO: fix error that all chords are shifted by one when a single chord is changed (F F C C) is supposed to go to this -> (G F C C), but instead it goes to this -> (G G F F))
+                getBufferOneChord().setChordRootNoteCBIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
                 }
                 oneChordInput.setVisible(false);
                 chordsInputPanel.setChords(getBufferChords());
                 chordsInputPanel.repaint();
-                // Output
-                System.out.println("BufferChords (saveOneChord): ");
-                outputChords(getBufferChords());
-                // System.out.println("Chords: ");
-                // outputChords(getChords());
             }
         });
 
@@ -640,9 +629,6 @@ public class GUI{
                     chordsDisplayChordsPanel.setErase(true);
                 }
                 chordsDisplayChordsPanel.repaint();
-                // Output
-                System.out.println("Chords: ");
-                outputChords(getChords());
             }
         });
 
@@ -719,16 +705,14 @@ public class GUI{
         keyCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                updateCalcMelodyNotes();
-                updateChordRootNoteModel();
+                updateKey();
             }
         });
 
         majorCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                updateCalcMelodyNotes();
-                updateChordRootNoteModel();
+                updateKey();
             }
         });
 
@@ -1165,5 +1149,46 @@ public class GUI{
         // copy arpeggiate
         newChord.setArpeggiate(chord.getArpeggiate());
         return newChord;
+    }
+
+    private void transposeChords(){ // this is only used when the key was changed and getChordsEntered() is true
+        // transpose getChords()
+        int index = 0;
+        for(int i = 0; i < getChords().length; i++){
+            if(getChords()[i] != null && i == index){
+                chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
+                setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
+                getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
+                updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord
+                getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
+                invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
+                getChords()[index] = getBufferOneChord();
+                while(index < getChords().length-1 && Chord.chordsEqual(getChords()[index], getChords()[index+1])){
+                    getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
+                    index++;
+                }
+                index++;
+            }
+        }
+        outputChords(getChords());
+        // TODO: think about how to deal with a switch from major to minor -> some notes will not be part of the key anymore (the 3 & 6)
+        // TODO: fix error that last beat (in major keys) is always seperated from the other beats even thought it's the same chord
+        // TODO: fix error that with a chord change the last beat of the first chord is always already the chord of the next beat (only the note names though -> the selected notes still match the first chord)
+        // TODO: fix error that the last chord doesn't have a root note
+        // update chords everywhere else
+        chordsInputPanel.setChords(getChords());
+        chordsInputPanel.repaint();
+        chordsDisplayChordsPanel.setChords(getChords());
+        chordsDisplayChordsPanel.repaint();
+        melodyDisplayMelodyPanel.setChords(getChords());
+        melodyDisplayMelodyPanel.repaint();
+    }
+
+    private void updateKey(){
+        updateCalcMelodyNotes();
+        updateChordRootNoteModel();
+        if(getChordsEntered()){
+            transposeChords();
+        }
     }
 }
