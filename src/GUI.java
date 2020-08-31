@@ -1154,34 +1154,33 @@ public class GUI{
     private void transposeChords(){ // this is only used when the key was changed and getChordsEntered() is true
         // transpose getChords()
         int index = 0;
+        int bufferIndex;
         for(int i = 0; i < getChords().length; i++){
             if(getChords()[i] != null && i == index){
                 chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
                 setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
                 getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
-                updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord
+                updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
                 getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
                 invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
-                getChords()[index] = getBufferOneChord();
-                while(index < getChords().length-1 && Chord.chordsEqual(getChords()[index], getChords()[index+1])){
+                bufferIndex = index;
+                while(index < getChords().length-1 && Chord.chordsEqual(getChords()[bufferIndex], getChords()[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
                     getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
                     index++;
                 }
+                getChords()[bufferIndex] = getBufferOneChord();
                 index++;
             }
         }
         outputChords(getChords());
-        // TODO: think about how to deal with a switch from major to minor -> some notes will not be part of the key anymore (the 3 & 6)
-        // TODO: fix error that last beat (in major keys) is always seperated from the other beats even thought it's the same chord
-        // TODO: fix error that with a chord change the last beat of the first chord is always already the chord of the next beat (only the note names though -> the selected notes still match the first chord)
-        // TODO: fix error that the last chord doesn't have a root note
+        // TODO: fix error that the last beat of a chord always has the base note of the next chord (fix error that the last chord doesn't have a root note)
+        // TODO: check whether the index incrementing part is right
         // update chords everywhere else
         chordsInputPanel.setChords(getChords());
         chordsInputPanel.repaint();
         chordsDisplayChordsPanel.setChords(getChords());
         chordsDisplayChordsPanel.repaint();
         melodyDisplayMelodyPanel.setChords(getChords());
-        melodyDisplayMelodyPanel.repaint();
     }
 
     private void updateKey(){
