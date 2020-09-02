@@ -1154,27 +1154,26 @@ public class GUI{
     private void transposeChords(){ // this is only used when the key was changed and getChordsEntered() is true
         // transpose getChords()
         int index = 0;
-        int bufferIndex;
         for(int i = 0; i < getChords().length; i++){
-            if(getChords()[i] != null && i == index){
-                chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
-                setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
-                getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
-                updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
-                getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
-                invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
-                bufferIndex = index;
-                while(index < getChords().length-1 && Chord.chordsEqual(getChords()[bufferIndex], getChords()[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
-                    getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
-                    index++;
+            if(i == index){
+                if(getChords()[i] != null){
+                    chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
+                    setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
+                    getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
+                    getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
+                    updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
+                    invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
+                    while(index < getChords().length-1 && Chord.chordsEqual(getChords()[i], getChords()[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
+                        getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
+                        index++;
+                    }
+                    getChords()[i] = getBufferOneChord();
                 }
-                getChords()[bufferIndex] = getBufferOneChord();
-                index++;
+                index++; // index has to be incremented even if the current chord is null
             }
         }
         outputChords(getChords());
-        // TODO: fix error that the last beat of a chord always has the base note of the next chord (fix error that the last chord doesn't have a root note)
-        // TODO: check whether the index incrementing part is right
+        // TODO: fix error that the chords of a chord progression are moved to the left by one (1. chord is replaced by 2.; 2. is replaced by 3. ...) when transposed for the first time
         // update chords everywhere else
         chordsInputPanel.setChords(getChords());
         chordsInputPanel.repaint();
