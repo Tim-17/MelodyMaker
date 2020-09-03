@@ -1162,8 +1162,7 @@ public class GUI{
                 if(getChords()[i] != null){
                     // transpose the chord at the index 'i'
                     chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
-                    setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
-                    System.out.println("getBufferOneChord().getRootNote(): " + getBufferOneChord().getKeyChordNotes()[0]);
+                    setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1)); // make sure that each chord references a new (transposed) chord
                     getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
                     getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
                     updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
@@ -1180,7 +1179,6 @@ public class GUI{
         }
         outputChords(getChords());
         // TODO: fix error that the chords of a chord progression are moved to the left by one (1. chord is replaced by 2.; 2. is replaced by 3. ...) when transposed for the first time
-        // TODO: fix that the last chord never has its root note stored in the keyChordNote/extraChordNote array -> first index is always 'null'
         // update chords everywhere else
         chordsInputPanel.setChords(getChords());
         chordsInputPanel.repaint();
