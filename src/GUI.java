@@ -463,7 +463,7 @@ public class GUI{
                         if(getChordBeginningIndex() != getChordEndingIndex()){
                             for(int i = getChordBeginningIndex(); i < getChordEndingIndex(); i++){ // check if there are different chords (also [some chord] && null) in the interval in which the user would like to edit chords
                                                                                                                                             // TODO: make it possible to easily extend a chord's duration by right click-dragging it (only save this change when saveOneChordB is activated) -> different chords should only matter if it's not [some chord] && null
-                                if(getBufferChords()[i] != getBufferChords()[i+1]){
+                                if(!(Chord.chordsEqual(getBufferChords()[i], getBufferChords()[i+1]))){
                                     openWindow = false;
                                     break;
                                 }
@@ -595,7 +595,9 @@ public class GUI{
         saveOneChordB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                getBufferOneChord().setChordRootNoteCBIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
+                if(getBufferOneChord() != null){
+                    getBufferOneChord().setChordRootNoteCBIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
+                }
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
                 }
@@ -1157,12 +1159,14 @@ public class GUI{
         for(int i = 0; i < getChords().length; i++){
             if(i == index){
                 if(getChords()[i] != null){
+                    // transpose the chord at the index 'i'
                     chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
                     setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex((String)chordRootNoteCB.getSelectedItem()) != -1)); // make sure that each chord references a new (transposed) chord
                     getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
                     getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
                     updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
                     invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
+                    // save the transposed chord to as many beats as necessary
                     while(index < getChords().length-1 && Chord.chordsEqual(getChords()[i], getChords()[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
                         getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
                         index++;
@@ -1174,6 +1178,7 @@ public class GUI{
         }
         outputChords(getChords());
         // TODO: fix error that the chords of a chord progression are moved to the left by one (1. chord is replaced by 2.; 2. is replaced by 3. ...) when transposed for the first time
+        // TODO: fix that the last chord never has its root note stored in the keyChordNote/extraChordNote array
         // update chords everywhere else
         chordsInputPanel.setChords(getChords());
         chordsInputPanel.repaint();
