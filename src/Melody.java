@@ -6,6 +6,8 @@ public class Melody {
     private boolean[] rhythm;
     private String[] melody;
     private final String[] allNotes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    private final int[] major = new int[]{2,2,1,2,2,2};
+    private final int[] minor = new int[]{2,1,2,2,1,2};
     private String[] keyNotes, extraNotes;
     private int length, changeIndex;
     private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage;
@@ -54,6 +56,14 @@ public class Melody {
 
     public String[] getAllNotes(){
         return this.allNotes;
+    }
+
+    private int[] getMajor(){
+        return this.major;
+    }
+
+    private int[] getMinor(){
+        return this.minor;
     }
 
     public String[] getKeyNotes(){
@@ -215,7 +225,7 @@ public class Melody {
         if(currentIndex != -1){
             if(major){
                 int i = 1;
-                for(int next : new int[]{2,2,1,2,2,2}){
+                for(int next : getMajor()){
                     if(currentIndex + next < getAllNotes().length){
                         currentIndex = currentIndex + next;
                     } else {
@@ -230,7 +240,7 @@ public class Melody {
                 }
             } else {
                 int i = 1;
-                for(int next : new int[]{2,1,2,2,1,2}){
+                for(int next : getMinor()){
                     if(currentIndex + next < getAllNotes().length){
                         currentIndex = currentIndex + next;
                     } else {
