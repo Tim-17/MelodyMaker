@@ -436,53 +436,28 @@ public class GUI{
                 }
             }
 
-            // ^
-            // |
-            // TODO: add function to edit the selected area when dragged over with right mouse button
-            // |
-            // v
-
             @Override
             public void mouseReleased(MouseEvent e){
                 int clear = (Main.OTHER_FRAME_WIDTH/4)/(getLength()+1); // width of the space in between rectangles
                 int rect = (Main.OTHER_FRAME_WIDTH*3/4)/getLength(); // width of each rectangle
                 for(int i = 1; i <= getLength(); i++){
                     if(clear*i+rect*(i-1) <= e.getX() & e.getX() <= clear*i+rect*(i-1)+rect && Main.OTHER_FRAME_HEIGHT/3 <= e.getY() && e.getY() <= Main.OTHER_FRAME_HEIGHT*2/3){
-                        if((i-1) < getChordBeginningIndex()){
-                            setChordEndingIndex(getChordBeginningIndex());
-                            setChordBeginningIndex(i-1);
-                        } else {
-                            setChordEndingIndex(i-1);
-                        }
+                        setChordEndingIndex(i-1);
                         break;
                     }
                 }
+
                 if(getChordBeginningIndex() != -1 && getChordEndingIndex() != -1){ // only try to make new chord / edit chord if user selected proper interval of beats
-                    boolean openWindow = true;
-                    if(getEditChord()){
-                        if(getChordBeginningIndex() != getChordEndingIndex()){
-                            for(int i = getChordBeginningIndex(); i < getChordEndingIndex(); i++){ // check if there are different chords (also [some chord] && null) in the interval in which the user would like to edit chords
-                                                                                                                                            // TODO: make it possible to easily extend a chord's duration by right click-dragging it (only save this change when saveOneChordB is activated) -> different chords should only matter if it's not [some chord] && null
-                                if(!(Chord.chordsEqual(getBufferChords()[i], getBufferChords()[i+1]))){
-                                    openWindow = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if(openWindow){
-                            if(getBufferChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord
-                                setEditChord(false);
-                            }
-                        }
-                    } else if(getDeleteChord()){
-                        openWindow = false;
+                    if(getDeleteChord()){
                         setBufferOneChord(null);
                         for(ActionListener a : saveOneChordB.getActionListeners()){ // invoke ActionListener of saveOneChordB so that it saves the fact that chords have been deleted
                             a.actionPerformed(new ActionEvent(saveOneChordB, ActionEvent.ACTION_PERFORMED, null));
                         }
-                    }
-                    if(openWindow){
-                        oneChordInput.setVisible(true);
+                    } else {
+                        if(getBufferChords()[getChordBeginningIndex()] == null){ // if no chord is entered as of now, the user can't edit a chord -> this is also done if getEditChord() is false because one will always have to check at least one if-statement (more inefficient way would be this: 1. if-statement -> if(getEditChord()); 2. if-statement -> the current one)
+                            setEditChord(false);
+                        }
+                        oneChordInput.setVisible(true); // the chord editing window is only supposed to be shown when the user either wants to edit or create a chord
                     }
                 }
             }
@@ -503,7 +478,7 @@ public class GUI{
             public void componentShown(ComponentEvent e){
                 super.componentShown(e);
                 if(getEditChord()){
-                    setBufferOneChord(copyOnlyChordInformationAndNotReference(getBufferChords()[getChordBeginningIndex()])); // TODO: make this work with the 'extension of chords over null chords by right click dragging' function
+                    setBufferOneChord(copyOnlyChordInformationAndNotReference(getBufferChords()[getChordBeginningIndex()]));
                     updateCheckBoxSelectionStatus(getBufferOneChord());
                     updateArpeggiateCBSelectedIndex();
                     chordRootNoteCB.setSelectedIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
@@ -585,7 +560,7 @@ public class GUI{
             });
         }
 
-        arpeggiateCB.addActionListener(new ActionListener() {
+        arpeggiateCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 getBufferOneChord().setArpeggiate(arpeggiateCB.getSelectedIndex() == 1);
@@ -597,6 +572,22 @@ public class GUI{
             public void actionPerformed(ActionEvent e){
                 if(getBufferOneChord() != null){
                     getBufferOneChord().setChordRootNoteCBIndex(findChordRootNoteCBNoteIndex(getBufferOneChord().getRootNote()));
+                }
+                if(getChordEndingIndex() < getChordBeginningIndex()){
+                    // swap values if endingIndex is greater than beginningIndex
+                    // 1: a; 2: b (1 == getChordBeginningIndex(); a == getChordBeginningIndex()'s value at the start; 2 == getChordEndingIndex(); b == getChordEndingIndex()'s value at the start)
+                    System.out.println("Before");
+                    System.out.println("getChordBeginningIndex = " + getChordBeginningIndex());
+                    System.out.println("getChordEndingIndex = " + getChordEndingIndex());
+                    // 1 = 1 - 2
+                    setChordBeginningIndex(getChordBeginningIndex()-getChordEndingIndex()); // ==> 1: a-b; 2: b
+                    // 2 = 2 + 1
+                    setChordEndingIndex(getChordEndingIndex()+getChordBeginningIndex()); // ==> 1: a-b; 2: a
+                    // 1 = 2 - 1
+                    setChordBeginningIndex(getChordEndingIndex()-getChordBeginningIndex()); // ==> 1: b; 2: a
+                    System.out.println("After");
+                    System.out.println("getChordBeginningIndex = " + getChordBeginningIndex());
+                    System.out.println("getChordEndingIndex = " + getChordEndingIndex());
                 }
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
