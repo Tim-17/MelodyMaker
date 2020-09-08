@@ -165,7 +165,6 @@ public class GUI{
         chordRootNoteCB.setRenderer(comboBoxColorRenderer);
         chordRootNoteCB.setMaximumRowCount(12);
         updateCheckBoxes();
-        setBufferOneChord(new Chord((String)chordRootNoteCB.getItemAt(0), true));
         
         chordsInputPanel = new ChordsPanel(getCalcMelody());
         chordsDisplayChordsPanel = new ChordsPanel(getCalcMelody()); // (TODO: use only this panel for chordsInput and get rid of chordsInputFrame & bufferChords)
@@ -500,13 +499,10 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 updateCheckBoxes();
-                if(getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1){ // rootNote == keyNote
-                    getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), true);
-                } else { // rootNote == extraNote
-                    getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), false);
+                if(getBufferOneChord() != null){ // if the bufferChord is null, the user doesn't want to enter a chord (every time the enterOneChord frame is opened a new bufferChord is created), which means that the bufferChord's notes don't have to be updated
+                    getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1);
+                    invokeCheckBoxActionListeners();
                 }
-                // kürzere Version: getBufferOneChord().setRootNote((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1);
-                invokeCheckBoxActionListeners();
             }
         });
 
@@ -576,18 +572,12 @@ public class GUI{
                 if(getChordEndingIndex() < getChordBeginningIndex()){
                     // swap values if endingIndex is greater than beginningIndex
                     // 1: a; 2: b (1 == getChordBeginningIndex(); a == getChordBeginningIndex()'s value at the start; 2 == getChordEndingIndex(); b == getChordEndingIndex()'s value at the start)
-                    System.out.println("Before");
-                    System.out.println("getChordBeginningIndex = " + getChordBeginningIndex());
-                    System.out.println("getChordEndingIndex = " + getChordEndingIndex());
                     // 1 = 1 - 2
                     setChordBeginningIndex(getChordBeginningIndex()-getChordEndingIndex()); // ==> 1: a-b; 2: b
                     // 2 = 2 + 1
                     setChordEndingIndex(getChordEndingIndex()+getChordBeginningIndex()); // ==> 1: a-b; 2: a
                     // 1 = 2 - 1
                     setChordBeginningIndex(getChordEndingIndex()-getChordBeginningIndex()); // ==> 1: b; 2: a
-                    System.out.println("After");
-                    System.out.println("getChordBeginningIndex = " + getChordBeginningIndex());
-                    System.out.println("getChordEndingIndex = " + getChordEndingIndex());
                 }
                 for(int i = getChordBeginningIndex(); i <= getChordEndingIndex(); i++){
                     getBufferChords()[i] = getBufferOneChord();
@@ -1142,47 +1132,50 @@ public class GUI{
         }
         // copy arpeggiate
         newChord.setArpeggiate(chord.getArpeggiate());
+        // copy chordRootNoteCBIndex
+        newChord.setChordRootNoteCBIndex(chord.getChordRootNoteCBIndex());
         return newChord;
     }
 
-    private void transposeChords(){ // this is only used when the key was changed and getChordsEntered() is true
-        // transpose getChords()
+    private void transposeChords(Chord[] chords){ // this is only used when the key was changed and getChordsEntered() is true
         int index = 0;
-        for(int i = 0; i < getChords().length; i++){
+        for(int i = 0; i < chords.length; i++){
             if(i == index){
-                if(getChords()[i] != null){
+                if(chords[i] != null){
                     // transpose the chord at the index 'i'
-                    chordRootNoteCB.setSelectedIndex(getChords()[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
+                    chordRootNoteCB.setSelectedIndex(chords[i].getChordRootNoteCBIndex()); // this updates the notes to the transposed chord's ones
                     setBufferOneChord(new Chord((String)chordRootNoteCB.getSelectedItem(), getCalcMelody().findKeyNoteIndex(Melody.extractActualNoteName((String)chordRootNoteCB.getSelectedItem())) != -1)); // make sure that each chord references a new (transposed) chord
-                    getBufferOneChord().setChordRootNoteCBIndex(getChords()[i].getChordRootNoteCBIndex());
-                    getBufferOneChord().setArpeggiate(getChords()[i].getArpeggiate());
-                    updateCheckBoxSelectionStatus(getChords()[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
+                    getBufferOneChord().setChordRootNoteCBIndex(chords[i].getChordRootNoteCBIndex());
+                    getBufferOneChord().setArpeggiate(chords[i].getArpeggiate());
+                    updateCheckBoxSelectionStatus(chords[i]); // this keeps the selected notes of the original chord stored in the oneChordFrame
                     invokeCheckBoxActionListeners(); // this extracts the new note information from the frame to the bufferChord
                     // save the transposed chord to as many beats as necessary
-                    while(index < getChords().length-1 && Chord.chordsEqual(getChords()[i], getChords()[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
-                        getChords()[index+1] = getBufferOneChord(); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
+                    while(index < chords.length-1 && Chord.chordsEqual(chords[i], chords[index+1])){ // always keep the chord of the first beat of potentially several beats of the same chord in order to have something to compare the other beats to
+                        chords[index+1] = copyOnlyChordInformationAndNotReference(getBufferOneChord()); // save some time by not repeating this process of transposing for every beat that actually stores the same chord info as the beat before
                         index++;
                     }
-                    getChords()[i] = getBufferOneChord();
+                    chords[i] = copyOnlyChordInformationAndNotReference(getBufferOneChord());
                 }
                 index++; // index has to be incremented even if the current chord is null
             }
         }
-        outputChords(getChords());
+        outputChords(chords);
         // TODO: fix error that the chords of a chord progression are moved to the left by one (1. chord is replaced by 2.; 2. is replaced by 3. ...) when transposed for the first time
-        // update chords everywhere else
-        chordsInputPanel.setChords(getChords());
-        chordsInputPanel.repaint();
-        chordsDisplayChordsPanel.setChords(getChords());
-        chordsDisplayChordsPanel.repaint();
-        melodyDisplayMelodyPanel.setChords(getChords());
     }
 
     private void updateKey(){
         updateCalcMelodyNotes();
         updateChordRootNoteModel();
         if(getChordsEntered()){
-            transposeChords();
+            // transpose getBufferChords() & getChords()
+            transposeChords(getBufferChords());
+            transposeChords(getChords());
+            // update chords everywhere else
+            chordsInputPanel.setChords(getBufferChords());
+            chordsInputPanel.repaint();
+            chordsDisplayChordsPanel.setChords(getChords());
+            chordsDisplayChordsPanel.repaint();
+            melodyDisplayMelodyPanel.setChords(getChords());
         }
     }
 }

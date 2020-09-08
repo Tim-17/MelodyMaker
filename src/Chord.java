@@ -52,6 +52,7 @@ public class Chord {
     public void setArpeggiate(boolean arpeggiate){
         this.arpeggiate = arpeggiate;
     }
+
     public int getChordRootNoteCBIndex(){
         return this.chordRootNoteCBIndex;
     }
