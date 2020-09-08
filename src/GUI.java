@@ -1159,8 +1159,6 @@ public class GUI{
                 index++; // index has to be incremented even if the current chord is null
             }
         }
-        outputChords(chords);
-        // TODO: fix error that the chords of a chord progression are moved to the left by one (1. chord is replaced by 2.; 2. is replaced by 3. ...) when transposed for the first time
     }
 
     private void updateKey(){
