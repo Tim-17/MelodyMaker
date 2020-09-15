@@ -14,7 +14,7 @@ public class GUI{
     private RhythmPanel rhythmInputPanel, rhythmDisplayRhythmPanel;
     private ChordsPanel chordsInputPanel, chordsDisplayChordsPanel;
     private MelodyPanel melodyDisplayMelodyPanel;
-    private JComboBox keyCB, majorCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB, arpeggiateCB;
+    private JComboBox tonicCB, scaleCB, timeSigCB, numberMeasuresCB, smallestSubdivCB, chordRootNoteCB, arpeggiateCB;
     private MutableComboBoxModel subdivModel, chordRootNoteModel;
     private ComboBoxColorRenderer comboBoxColorRenderer;
     private JButton enterRhythmB, saveRhythmB, deleteRhythm, enterChordsB, saveChordsB, saveOneChordB, deleteChordsB, createMelodyB, playMelodyB;
@@ -85,11 +85,12 @@ public class GUI{
         lengthParametersComboBoxesPanel = new JPanel();
         lengthParametersComboBoxesPanel.setLayout(new GridLayout(1,3));
         melodyDisplayMelodyPanel = new MelodyPanel();
-        keyCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
-        keyCB.setSelectedIndex(0);
-        keyCB.setMaximumRowCount(12);
-        majorCB = new JComboBox(new String[]{"Major", "Minor"}); // TODO: Could add other modes
-        majorCB.setSelectedIndex(0);
+        tonicCB = new JComboBox(new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"});
+        tonicCB.setSelectedIndex(0);
+        tonicCB.setMaximumRowCount(12);
+        scaleCB = new JComboBox(new String[]{"Ionian (Major)", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian (Minor)", "Locrian", "Harmonic Minor", "Melodic Minor"});
+        scaleCB.setMaximumRowCount(9);
+        scaleCB.setSelectedIndex(0);
         timeSigCB = new JComboBox(new String[]{"4/4", "3/4", "6/4", "2/4", "5/4", "7/4", "7/8", "15/16"});
         timeSigCB.setSelectedIndex(0);
         numberMeasuresCB = new JComboBox(new String[]{"1", "2", "3", "4"});
@@ -198,8 +199,8 @@ public class GUI{
         extraInputPanel.add(chordsDisplayPanel);
         extraInputPanel.add(createMelodyB);
 
-        keyChoicePanel.add(keyCB);
-        keyChoicePanel.add(majorCB);
+        keyChoicePanel.add(tonicCB);
+        keyChoicePanel.add(scaleCB);
 
         rhythmInput.add(rhythmFramePanel);
         rhythmInput.pack();
@@ -641,11 +642,7 @@ public class GUI{
             @Override
             public void actionPerformed(ActionEvent e){
                 setMelody(new Melody(getLength()));
-                if(majorCB.getSelectedIndex() == 0){
-                    getMelody().createKeyNotes((String)keyCB.getSelectedItem(), true);
-                } else {
-                    getMelody().createKeyNotes((String)keyCB.getSelectedItem(), false);
-                }
+                getMelody().createKeyNotes((String)tonicCB.getSelectedItem(), scaleCB.getSelectedIndex());
                 if(getRhythmEntered()){
                     getMelody().setRhythm(getRhythm());
                 } else {
@@ -689,14 +686,14 @@ public class GUI{
 
         // TODO: update getChords() when key is changed -> transpose
 
-        keyCB.addActionListener(new ActionListener(){
+        tonicCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 updateKey();
             }
         });
 
-        majorCB.addActionListener(new ActionListener(){
+        scaleCB.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
                 updateKey();
@@ -795,7 +792,7 @@ public class GUI{
 
     public void setCalcMelody(Melody calcMelody) {
         this.calcMelody = calcMelody;
-        updateCalcMelodyNotes();
+        calcMelody.createKeyNotes((String)tonicCB.getSelectedItem(), scaleCB.getSelectedIndex()); // updateCalcMelodyNotes
     }
 
     public MusicPlayer getMusicPlayer(){
@@ -953,14 +950,6 @@ public class GUI{
         melodyDisplayMelodyPanel.repaint();
     }
 
-    private void updateCalcMelodyNotes(){
-        if(majorCB.getSelectedIndex() == 0){
-            calcMelody.createKeyNotes((String)keyCB.getSelectedItem(), true);
-        } else {
-            calcMelody.createKeyNotes((String)keyCB.getSelectedItem(), false);
-        }
-    }
-
     private void updateChordRootNoteModel(){
         // Delete all elements but the last one (caused NullPointerException)
         int size = chordRootNoteModel.getSize();
@@ -974,7 +963,7 @@ public class GUI{
     }
 
     private void addChordRootNoteModelElements(){
-        for(int i = getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()); i < getCalcMelody().findAllNotesIndex((String)keyCB.getSelectedItem()) + getCalcMelody().getAllNotes().length; i++){
+        for(int i = getCalcMelody().findAllNotesIndex((String)tonicCB.getSelectedItem()); i < getCalcMelody().findAllNotesIndex((String)tonicCB.getSelectedItem()) + getCalcMelody().getAllNotes().length; i++){
             if(i < getCalcMelody().getAllNotes().length){
                 if(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) != -1){
                     chordRootNoteModel.addElement(getCalcMelody().getAllNotes()[i] + " (" + toRoman(getCalcMelody().findKeyNoteIndex(getCalcMelody().getAllNotes()[i]) + 1) + ")");
@@ -1165,7 +1154,7 @@ public class GUI{
     }
 
     private void updateKey(){
-        updateCalcMelodyNotes();
+        calcMelody.createKeyNotes((String)tonicCB.getSelectedItem(), scaleCB.getSelectedIndex()); // updateCalcMelodyNotes
         updateChordRootNoteModel();
         if(getChordsEntered()){
             // transpose getBufferChords() & getChords()

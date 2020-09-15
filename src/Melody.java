@@ -6,9 +6,8 @@ public class Melody {
     private boolean[] rhythm;
     private String[] melody;
     private final String[] allNotes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-    private final int[] major = new int[]{2,2,1,2,2,2};
-    private final int[] minor = new int[]{2,1,2,2,1,2};
-    private String[] keyNotes, extraNotes;
+    private final int[][] scales = new int[][]{new int[]{2,2,1,2,2,2}, new int[]{2,1,2,2,2,1}, new int[]{1,2,2,2,1,2}, new int[]{2,2,2,1,2,2}, new int[]{2,2,1,2,2,1}, new int[]{2,1,2,2,1,2}, new int[]{1,2,2,1,2,2}, new int[]{2,1,2,2,1,3}, new int[]{2,1,2,2,2,2}}; // ionian, dorian, phrygian, lydian, mixolydian, aeolian, locrian, harmonic minor, melodic minor
+    private String[] keyNotes, extraNotes; // TODO: the extraNotes aren't referenced anywhere so they could be removed (might be useful though)
     private int length, changeIndex;
     private double pausePercentage, iPercentage, iiPercentage, iiiPercentage, ivPercentage, vPercentage, viPercentage;
     private boolean changeIndexFound;
@@ -19,6 +18,7 @@ public class Melody {
         setLength(length);
         setPausePercentage(0.75);
         // This percentage distribution lays emphasis on I and V -> can always be manipulated for different results
+        // TODO: change this for every mode to emphasize every mode's individual specialty
         setiPercentage(0.25);
         setiiPercentage(getiPercentage() + 0.1);
         setiiiPercentage(getiiPercentage() + 0.1);
@@ -56,14 +56,6 @@ public class Melody {
 
     public String[] getAllNotes(){
         return this.allNotes;
-    }
-
-    private int[] getMajor(){
-        return this.major;
-    }
-
-    private int[] getMinor(){
-        return this.minor;
     }
 
     public String[] getKeyNotes(){
@@ -194,6 +186,10 @@ public class Melody {
         this.changeIndexFound = changeIndexFound;
     }
 
+    public int[][] getScales() {
+        return scales;
+    }
+
 
     // Actual Methods
 
@@ -210,7 +206,7 @@ public class Melody {
         }
     }
 
-    public void createKeyNotes(String tonic, boolean major){
+    public void createKeyNotes(String tonic, int scale){
         getKeyNotes()[0] = tonic;
         setChangeIndexFound(false);
         int currentIndex = -1;
@@ -223,36 +219,19 @@ public class Melody {
         }
         // Create rest of notes based on index of tonic
         if(currentIndex != -1){
-            if(major){
-                int i = 1;
-                for(int next : getMajor()){
-                    if(currentIndex + next < getAllNotes().length){
-                        currentIndex = currentIndex + next;
-                    } else {
-                        currentIndex = currentIndex + next - getAllNotes().length;
-                        if(!getChangeIndexFound()){
-                            setChangeIndex(i);
-                            setChangeIndexFound(true);
-                        }
+            int i = 1;
+            for(int next : getScales()[scale]){
+                if(currentIndex + next < getAllNotes().length){
+                    currentIndex = currentIndex + next;
+                } else {
+                    currentIndex = currentIndex + next - getAllNotes().length;
+                    if(!getChangeIndexFound()){
+                        setChangeIndex(i);
+                        setChangeIndexFound(true);
                     }
-                    getKeyNotes()[i] = getAllNotes()[currentIndex];
-                    i++;
                 }
-            } else {
-                int i = 1;
-                for(int next : getMinor()){
-                    if(currentIndex + next < getAllNotes().length){
-                        currentIndex = currentIndex + next;
-                    } else {
-                        currentIndex = currentIndex + next - getAllNotes().length;
-                        if(!getChangeIndexFound()){
-                            setChangeIndex(i);
-                            setChangeIndexFound(true);
-                        }
-                    }
-                    getKeyNotes()[i] = getAllNotes()[currentIndex];
-                    i++;
-                }
+                getKeyNotes()[i] = getAllNotes()[currentIndex];
+                i++;
             }
         } else {
             System.out.println("The given tonic is not part of the Western note system!");
